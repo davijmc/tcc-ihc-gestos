@@ -1,10 +1,18 @@
 """
 UI para gerenciamento de dicionários de gestos (Etapa 4).
 Editor embutido na sidebar com captura por contagem regressiva.
+
+Melhorias implementadas:
+- Captura salva landmarks normalizados reais (não apenas nome simbólico)
+- Handedness (mão esquerda/direita/ambas) é armazenado por gesto
+- Suporte a gestos combinados com duas mãos
+- Integração com dm.save_gesture_capture() para persistência dos landmarks
+- Carregamento correto de gestos existentes com todos os metadados
 """
 import customtkinter as ctk
 from tkinter import messagebox
 import dictionary_manager as dm
+from gesture_recognition import landmarks_to_list
 
 
 class DictionaryEditorPanel(ctk.CTkFrame):
@@ -200,27 +208,58 @@ class DictionaryEditorPanel(ctk.CTkFrame):
         )
         capture_btn.grid(row=0, column=0, sticky="ew")
 
-        gesture_name_var = {"value": ""}
-
-        if existing:
-            gname = existing.get("gesture_name", "")
-            gesture_name_var["value"] = gname
-            if gname:
-                gesture_label.configure(text=f"🤚 {gname}", text_color="#10B981")
-            # Suporta campo "label" (novo) ou fallback para "gesture_name"
-            name_entry.insert(0, existing.get("label", gname))
-            type_combo.set(existing.get("command_type", "computador"))
-            cmd_entry.insert(0, existing.get("command", ""))
-
+        # ----------------------------------------------------------------
+        # row_data agora inclui todos os campos necessários para captura
+        # e reconhecimento posterior por similaridade.
+        # ----------------------------------------------------------------
         row_data = {
             "row": row_frame,
             "name_entry": name_entry,
             "gesture_label": gesture_label,
-            "gesture_name": gesture_name_var,
+            # gesture_name: nome simbólico (ex: "FIST") — usado como ID interno
+            "gesture_name": {"value": ""},
+            # handedness: "Right" | "Left" | "Both" — determinado na captura
+            "handedness": {"value": ""},
+            # normalized_landmarks: lista de listas [[x,y,z]×21] por mão capturada
+            # Para gestos de duas mãos: lista de duas sublistas
+            "normalized_landmarks": {"value": None},
+            # captured_landmarks_path: caminho do arquivo JSON salvo no disco
+            "captured_landmarks_path": {"value": ""},
             "type": type_combo,
             "cmd": cmd_entry,
             "capture_btn": capture_btn,
         }
+
+        # Carregar dados de um gesto existente (modo edição)
+        if existing:
+            gname = existing.get("gesture_name", "")
+            row_data["gesture_name"]["value"] = gname
+
+            handedness = existing.get("handedness", "")
+            row_data["handedness"]["value"] = handedness
+
+            lm_path = existing.get("captured_landmarks_path", "")
+            row_data["captured_landmarks_path"]["value"] = lm_path
+
+            # Tentar carregar os landmarks do arquivo salvo
+            if lm_path and __import__("os").path.isfile(lm_path):
+                try:
+                    import json
+                    with open(lm_path, "r", encoding="utf-8") as f:
+                        lm_data = json.load(f)
+                    row_data["normalized_landmarks"]["value"] = lm_data.get("normalized_landmarks")
+                except Exception:
+                    pass
+
+            if gname:
+                hand_icon = _handedness_icon(handedness)
+                gesture_label.configure(
+                    text=f"{hand_icon} {gname}", text_color="#10B981")
+
+            name_entry.insert(0, existing.get("label", gname))
+            type_combo.set(existing.get("command_type", "computador"))
+            cmd_entry.insert(0, existing.get("command", ""))
+
         capture_btn.configure(command=lambda rd=row_data: self._start_capture(rd))
         self.gesture_rows.append(row_data)
 
@@ -264,25 +303,80 @@ class DictionaryEditorPanel(ctk.CTkFrame):
             self._do_capture()
 
     def _do_capture(self):
+        """
+        Captura o gesto atual da câmera, incluindo:
+        - Nome simbólico do gesto (ex: "FIST")
+        - Handedness (Right / Left / Both)
+        - Landmarks normalizados (invariantes a posição e escala)
+
+        Para gestos com duas mãos, ambas as mãos são capturadas.
+        Os landmarks são salvos em disco via dm.save_gesture_capture().
+        """
         gesture_name = "UNKNOWN"
+        handedness_str = ""
+        normalized_lms = None
+        capture_path = ""
+
         if (getattr(self.app, "gesture_recognizer", None) and
                 self.app.gesture_recognizer.latest_result):
             hands = self.app.gesture_recognizer.get_all_hands_info()
-            if hands:
-                gesture_name = hands[0]["gesture"]
+
+            if len(hands) == 1:
+                # Gesto de uma mão
+                h = hands[0]
+                gesture_name = h["gesture"]
+                handedness_str = h["handedness"]
+                normalized_lms = [landmarks_to_list(h["normalized_landmarks"])]
+
+            elif len(hands) >= 2:
+                # Gesto combinado de duas mãos
+                # Ordenar: Left primeiro, Right depois (convenção)
+                sorted_hands = sorted(hands[:2], key=lambda x: x["handedness"])
+                gestures_combined = "+".join(h["gesture"] for h in sorted_hands)
+                gesture_name = f"BOTH_{gestures_combined}"
+                handedness_str = "Both"
+                normalized_lms = [
+                    landmarks_to_list(h["normalized_landmarks"]) for h in sorted_hands
+                ]
 
         if self._capture_row and self._capture_row["row"].winfo_exists():
-            self._capture_row["gesture_name"]["value"] = gesture_name
-            if gesture_name and gesture_name != "UNKNOWN":
-                self._capture_row["gesture_label"].configure(
-                    text=f"🤚 {gesture_name}", text_color="#10B981")
+            row_data = self._capture_row
+
+            if gesture_name and gesture_name != "UNKNOWN" and normalized_lms is not None:
+                # Salvar landmarks no disco
+                dict_name = self.entry_name.get().strip() or "_temp"
+                try:
+                    capture_data = {
+                        "gesture_name": gesture_name,
+                        "handedness": handedness_str,
+                        "normalized_landmarks": normalized_lms,
+                    }
+                    capture_path = dm.save_gesture_capture(
+                        dict_name, gesture_name, capture_data
+                    )
+                except Exception as e:
+                    capture_path = ""
+                    # Não interrompe o fluxo — landmarks ficam apenas em memória
+                    print(f"[AVISO] Falha ao salvar landmarks: {e}")
+
+                # Atualizar row_data com todos os campos capturados
+                row_data["gesture_name"]["value"] = gesture_name
+                row_data["handedness"]["value"] = handedness_str
+                row_data["normalized_landmarks"]["value"] = normalized_lms
+                row_data["captured_landmarks_path"]["value"] = capture_path
+
+                hand_icon = _handedness_icon(handedness_str)
+                row_data["gesture_label"].configure(
+                    text=f"{hand_icon} {gesture_name}", text_color="#10B981")
                 self.capture_label.configure(
-                    text=f"✅ Capturado: {gesture_name}", text_color="#10B981")
+                    text=f"✅ Capturado: {gesture_name} ({handedness_str})",
+                    text_color="#10B981")
             else:
-                self._capture_row["gesture_label"].configure(
+                row_data["gesture_label"].configure(
                     text="⚠ Sem gesto", text_color="#EF4444")
                 self.capture_label.configure(
-                    text="⚠ Nenhum gesto. Tente novamente.", text_color="#EF4444")
+                    text="⚠ Nenhum gesto detectado. Tente novamente.",
+                    text_color="#EF4444")
 
         for gr in self.gesture_rows:
             if gr["row"].winfo_exists():
@@ -317,13 +411,35 @@ class DictionaryEditorPanel(ctk.CTkFrame):
                 messagebox.showwarning("Aviso",
                     "Capture o gesto de cada linha antes de salvar.", parent=self)
                 return
+
             label = gr["name_entry"].get().strip() or gname
+            handedness = gr["handedness"]["value"]
+            lm_path = gr["captured_landmarks_path"]["value"]
+            normalized_lms = gr["normalized_landmarks"]["value"]
+
+            # Se os landmarks estão em memória mas não foram salvos ainda
+            # (ex: dict_name estava vazio durante a captura), salvar agora
+            if normalized_lms is not None and not lm_path:
+                try:
+                    capture_data = {
+                        "gesture_name": gname,
+                        "handedness": handedness,
+                        "normalized_landmarks": normalized_lms,
+                    }
+                    lm_path = dm.save_gesture_capture(name, gname, capture_data)
+                    gr["captured_landmarks_path"]["value"] = lm_path
+                except Exception as e:
+                    print(f"[AVISO] Falha ao salvar landmarks no _save: {e}")
+
             gestures.append({
                 "gesture_name": gname,
                 "label": label,
+                "handedness": handedness,
                 "command_type": gr["type"].get(),
                 "command": gr["cmd"].get().strip(),
-                "captured_landmarks": []
+                "captured_landmarks_path": lm_path,
+                # Manter compatibilidade com versão anterior
+                "captured_landmarks": normalized_lms if normalized_lms is not None else [],
             })
 
         if not gestures:
@@ -336,3 +452,18 @@ class DictionaryEditorPanel(ctk.CTkFrame):
         self.hide()
         if self.on_save_callback:
             self.on_save_callback()
+
+
+# ------------------------------------------------------------------
+# Funções auxiliares
+# ------------------------------------------------------------------
+
+def _handedness_icon(handedness):
+    """Retorna um ícone visual para o tipo de mão."""
+    if handedness == "Right":
+        return "🤚R"
+    elif handedness == "Left":
+        return "🤚L"
+    elif handedness == "Both":
+        return "🙌"
+    return "🤚"

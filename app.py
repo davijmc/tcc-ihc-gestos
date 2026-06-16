@@ -702,11 +702,13 @@ class CameraApp(ctk.CTk):
                         self.gesture_recognizer.process_frame(frame)
                         if self.show_landmarks:
                             self.gesture_recognizer.draw_landmarks(frame)
-                        # Etapa 5: enviar gesto ao runner
+                        # Etapa 5: enviar gestos ao runner com landmarks completos
                         if self.runner and self.runner.running:
                             hands = self.gesture_recognizer.get_all_hands_info()
                             if hands:
-                                self.runner.on_gesture_detected(hands[0]["gesture"])
+                                # Passa a lista completa de hands_info (com landmarks
+                                # normalizados) para o classificador por similaridade
+                                self.runner.on_gesture_detected(hands)
                     except Exception:
                         pass  # Erro no reconhecedor não deve matar o loop de vídeo
                     

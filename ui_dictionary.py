@@ -451,7 +451,7 @@ class DictionaryEditorPanel(ctk.CTkFrame):
         messagebox.showinfo("Sucesso", f"'{name}' salvo!", parent=self)
         self.hide()
         if self.on_save_callback:
-            self.on_save_callback()
+            self.on_save_callback(name)
 
 
 # ------------------------------------------------------------------

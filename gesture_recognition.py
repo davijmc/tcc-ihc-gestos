@@ -15,7 +15,12 @@ try:
 except ImportError:
     MEDIAPIPE_AVAILABLE = False
 
-MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hand_landmarker.task")
+import sys
+
+if getattr(sys, 'frozen', False):
+    MODEL_PATH = os.path.join(sys._MEIPASS, "hand_landmarker.task")
+else:
+    MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hand_landmarker.task")
 
 # Conexões entre landmarks para desenho manual
 HAND_CONNECTIONS = [

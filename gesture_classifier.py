@@ -32,7 +32,7 @@ from typing import Optional
 
 # Threshold padrão de distância para considerar um gesto reconhecido.
 # Valores menores = mais restritivo. Ajuste conforme necessário.
-DEFAULT_THRESHOLD = 0.35
+DEFAULT_THRESHOLD = 0.25
 
 
 def _rmse(a: np.ndarray, b: np.ndarray) -> float:

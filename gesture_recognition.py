@@ -1,6 +1,7 @@
 """
 Módulo de Reconhecimento de Gestos usando MediaPipe Tasks API (>=0.10.30).
 Etapa 3: Integração com OpenCV para detecção de mãos e desenho de landmarks.
+Inclui normalização de landmarks para uso no classificador por similaridade.
 """
 import os
 import cv2
@@ -14,20 +15,87 @@ try:
 except ImportError:
     MEDIAPIPE_AVAILABLE = False
 
-MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hand_landmarker.task")
+import sys
+
+if getattr(sys, 'frozen', False):
+    MODEL_PATH = os.path.join(sys._MEIPASS, "hand_landmarker.task")
+else:
+    MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hand_landmarker.task")
 
 # Conexões entre landmarks para desenho manual
 HAND_CONNECTIONS = [
-    (0,1),(1,2),(2,3),(3,4),   # Polegar
-    (0,5),(5,6),(6,7),(7,8),   # Indicador
-    (0,9),(9,10),(10,11),(11,12),  # Médio
-    (0,13),(13,14),(14,15),(15,16), # Anelar
-    (0,17),(17,18),(18,19),(19,20), # Mindinho
-    (5,9),(9,13),(13,17),       # Palma
+    (0,1),(1,2),(2,3),(3,4),          # Polegar
+    (0,5),(5,6),(6,7),(7,8),          # Indicador
+    (0,9),(9,10),(10,11),(11,12),     # Médio
+    (0,13),(13,14),(14,15),(15,16),   # Anelar
+    (0,17),(17,18),(18,19),(19,20),   # Mindinho
+    (5,9),(9,13),(13,17),             # Palma
 ]
 
 FINGER_TIPS = [4, 8, 12, 16, 20]
 FINGER_PIPS = [3, 6, 10, 14, 18]
+
+
+def normalize_landmarks(hand_lms):
+    """
+    Normaliza os 21 landmarks de uma mão para um vetor invariante a
+    translação e escala.
+
+    Estratégia:
+    1. Subtrai o landmark 0 (pulso) de todos os pontos → invariância à translação.
+    2. Divide pela distância máxima entre o pulso e qualquer ponto → invariância à escala.
+    3. Retorna um array numpy de shape (21, 3) com valores em [-1, 1].
+
+    Parâmetros
+    ----------
+    hand_lms : lista de objetos com atributos .x, .y, .z
+
+    Retorna
+    -------
+    np.ndarray de shape (21, 3), dtype float32
+    """
+    pts = np.array([[lm.x, lm.y, lm.z] for lm in hand_lms], dtype=np.float32)
+
+    # 1. Centralizar no pulso (landmark 0)
+    origin = pts[0].copy()
+    pts -= origin
+
+    # 2. Normalizar pela escala (distância máxima do pulso)
+    scale = np.max(np.linalg.norm(pts, axis=1))
+    if scale > 1e-6:
+        pts /= scale
+
+    return pts
+
+
+def landmarks_to_list(normalized_pts):
+    """
+    Converte um array numpy (21, 3) em lista de listas serializável em JSON.
+
+    Parâmetros
+    ----------
+    normalized_pts : np.ndarray de shape (21, 3)
+
+    Retorna
+    -------
+    list[list[float]]
+    """
+    return normalized_pts.tolist()
+
+
+def list_to_landmarks(data):
+    """
+    Converte uma lista de listas (carregada de JSON) de volta para np.ndarray.
+
+    Parâmetros
+    ----------
+    data : list[list[float]]
+
+    Retorna
+    -------
+    np.ndarray de shape (21, 3), dtype float32
+    """
+    return np.array(data, dtype=np.float32)
 
 
 class HandGestureRecognizer:
@@ -115,7 +183,19 @@ class HandGestureRecognizer:
             return f"CUSTOM_{total}"
 
     def get_all_hands_info(self):
-        """Retorna informações de todas as mãos detectadas."""
+        """
+        Retorna informações de todas as mãos detectadas, incluindo
+        landmarks normalizados prontos para salvar/comparar.
+
+        Retorna
+        -------
+        list[dict] com chaves:
+            - handedness : str  ("Right" | "Left")
+            - gesture    : str  (nome simbólico, ex: "FIST")
+            - fingers    : list[bool]
+            - landmarks  : lista de objetos MediaPipe (coordenadas originais)
+            - normalized_landmarks : np.ndarray (21, 3) — invariante a escala/posição
+        """
         hands_info = []
         if not self.latest_result or not self.latest_result.hand_landmarks:
             return hands_info
@@ -125,11 +205,13 @@ class HandGestureRecognizer:
                 handedness = self.latest_result.handedness[i][0].category_name
             gesture = self.get_gesture_name(hand_lms, handedness)
             fingers = self.get_finger_states(hand_lms, handedness)
+            normalized = normalize_landmarks(hand_lms)
             hands_info.append({
                 "handedness": handedness,
                 "gesture": gesture,
                 "fingers": fingers,
-                "landmarks": hand_lms
+                "landmarks": hand_lms,
+                "normalized_landmarks": normalized,
             })
         return hands_info
 

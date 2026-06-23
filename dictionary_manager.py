@@ -1,13 +1,24 @@
 """
 Módulo de Gerenciamento de Dicionários de Gestos.
 Etapa 4: CRUD de dicionários com gestos capturados e comandos associados.
+
+Melhorias implementadas:
+- add_gesture_to_dict aceita handedness e captured_landmarks_path
+- save_gesture_capture persiste landmarks normalizados em JSON
+- load_gesture_captures carrega todas as capturas de um gesto
 """
 import os
 import json
 import shutil
 
+import sys
+
 # Diretório base para dicionários
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 DICTIONARIES_DIR = os.path.join(BASE_DIR, "dicionarios")
 
 # Comandos pyautogui disponíveis para consulta
@@ -36,6 +47,15 @@ PYAUTOGUI_COMMANDS = [
 def ensure_dict_dir():
     """Garante que o diretório de dicionários existe."""
     os.makedirs(DICTIONARIES_DIR, exist_ok=True)
+
+
+def safe_gesture_name(gesture_name):
+    """
+    Sanitiza o nome de um gesto para uso seguro como nome de pasta.
+    Usado de forma consistente em todas as operações de disco para que
+    o caminho gerado no save bata com o usado na captura/carga.
+    """
+    return (gesture_name or "").replace("/", "_").replace("\\", "_").replace("+", "_")
 
 
 def list_dictionaries():
@@ -70,9 +90,10 @@ def save_dictionary(data):
     dict_dir = os.path.join(DICTIONARIES_DIR, name)
     os.makedirs(dict_dir, exist_ok=True)
 
-    # Criar subpastas para cada gesto
+    # Criar subpastas para cada gesto (nome sanitizado, consistente com
+    # save_gesture_capture/load_gesture_captures)
     for gesture in data.get("gestures", []):
-        gesture_dir = os.path.join(dict_dir, gesture["gesture_name"])
+        gesture_dir = os.path.join(dict_dir, safe_gesture_name(gesture["gesture_name"]))
         os.makedirs(gesture_dir, exist_ok=True)
 
     meta_path = os.path.join(dict_dir, "meta.json")
@@ -104,13 +125,29 @@ def create_empty_dictionary(name, capture_time=3):
     }
 
 
-def add_gesture_to_dict(data, gesture_name, command_type, command):
-    """Adiciona um gesto ao dicionário."""
+def add_gesture_to_dict(data, gesture_name, command_type, command,
+                         handedness="", captured_landmarks_path="",
+                         captured_landmarks=None):
+    """
+    Adiciona um gesto ao dicionário.
+
+    Parâmetros
+    ----------
+    data                    : dict — dicionário em memória
+    gesture_name            : str  — nome simbólico (ex: "FIST", "BOTH_FIST+OPEN_HAND")
+    command_type            : str  — "serial" ou "computador"
+    command                 : str  — comando a executar
+    handedness              : str  — "Right" | "Left" | "Both"
+    captured_landmarks_path : str  — caminho do arquivo JSON com landmarks
+    captured_landmarks      : list — landmarks normalizados em memória (fallback)
+    """
     data["gestures"].append({
         "gesture_name": gesture_name,
-        "command_type": command_type,  # "serial" ou "computador"
+        "command_type": command_type,
         "command": command,
-        "captured_landmarks": []
+        "handedness": handedness,
+        "captured_landmarks_path": captured_landmarks_path,
+        "captured_landmarks": captured_landmarks if captured_landmarks is not None else [],
     })
     return data
 
@@ -119,16 +156,39 @@ def remove_gesture_from_dict(data, gesture_index):
     """Remove um gesto do dicionário pelo índice."""
     if 0 <= gesture_index < len(data["gestures"]):
         removed = data["gestures"].pop(gesture_index)
-        # Remove a pasta do gesto
-        gesture_dir = os.path.join(DICTIONARIES_DIR, data["name"], removed["gesture_name"])
+        # Remove a pasta do gesto (nome sanitizado, consistente com o save)
+        gesture_dir = os.path.join(DICTIONARIES_DIR, data["name"],
+                                    safe_gesture_name(removed["gesture_name"]))
         if os.path.isdir(gesture_dir):
             shutil.rmtree(gesture_dir)
     return data
 
 
 def save_gesture_capture(dict_name, gesture_name, landmarks_data):
-    """Salva os dados de captura de um gesto (landmarks)."""
-    gesture_dir = os.path.join(DICTIONARIES_DIR, dict_name, gesture_name)
+    """
+    Salva os dados de captura de um gesto (landmarks normalizados) em disco.
+
+    O arquivo JSON contém:
+    {
+        "gesture_name": str,
+        "handedness": str,
+        "normalized_landmarks": list[list[list[float]]]  — uma lista por mão
+    }
+
+    Parâmetros
+    ----------
+    dict_name      : str  — nome do dicionário
+    gesture_name   : str  — nome do gesto (usado como subpasta)
+    landmarks_data : dict — dados a salvar
+
+    Retorna
+    -------
+    str — caminho absoluto do arquivo salvo
+    """
+    ensure_dict_dir()
+    # Sanitizar nome do gesto para uso como nome de pasta
+    safe_name = safe_gesture_name(gesture_name)
+    gesture_dir = os.path.join(DICTIONARIES_DIR, dict_name, safe_name)
     os.makedirs(gesture_dir, exist_ok=True)
 
     existing = [f for f in os.listdir(gesture_dir) if f.endswith(".json")]
@@ -136,9 +196,33 @@ def save_gesture_capture(dict_name, gesture_name, landmarks_data):
     capture_path = os.path.join(gesture_dir, f"capture_{idx:04d}.json")
 
     with open(capture_path, "w", encoding="utf-8") as f:
-        json.dump(landmarks_data, f)
+        json.dump(landmarks_data, f, ensure_ascii=False)
 
     return capture_path
+
+
+def load_gesture_captures(dict_name, gesture_name):
+    """
+    Carrega todas as capturas de landmarks de um gesto.
+
+    Retorna
+    -------
+    list[dict] — lista de objetos carregados dos arquivos JSON
+    """
+    safe_name = safe_gesture_name(gesture_name)
+    gesture_dir = os.path.join(DICTIONARIES_DIR, dict_name, safe_name)
+    captures = []
+    if not os.path.isdir(gesture_dir):
+        return captures
+    for fname in sorted(os.listdir(gesture_dir)):
+        if fname.endswith(".json"):
+            fpath = os.path.join(gesture_dir, fname)
+            try:
+                with open(fpath, "r", encoding="utf-8") as f:
+                    captures.append(json.load(f))
+            except Exception:
+                continue
+    return captures
 
 
 def has_serial_commands(data):

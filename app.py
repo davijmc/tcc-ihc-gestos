@@ -697,18 +697,25 @@ class CameraApp(ctk.CTk):
                     frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
                 # 2.5. Reconhecimento de gestos (Etapa 3)
-                if self.gesture_recognizer:
+                # Só processa quando o resultado é realmente usado: landmarks
+                # visíveis na tela OU runner ativo. Evita rodar a detecção
+                # (operação cara) à toa quando ninguém consome o resultado.
+                runner_active = self.runner is not None and self.runner.running
+                if self.gesture_recognizer and (self.show_landmarks or runner_active):
                     try:
                         self.gesture_recognizer.process_frame(frame)
                         if self.show_landmarks:
                             self.gesture_recognizer.draw_landmarks(frame)
-                        # Etapa 5: enviar gesto ao runner
-                        if self.runner and self.runner.running:
+                        # Etapa 5: enviar gestos ao runner com landmarks completos
+                        if runner_active:
                             hands = self.gesture_recognizer.get_all_hands_info()
                             if hands:
-                                self.runner.on_gesture_detected(hands[0]["gesture"])
-                    except Exception:
-                        pass  # Erro no reconhecedor não deve matar o loop de vídeo
+                                # Passa a lista completa de hands_info (com landmarks
+                                # normalizados) para o classificador por similaridade
+                                self.runner.on_gesture_detected(hands)
+                    except Exception as e:
+                        # Erro no reconhecedor não deve matar o loop de vídeo
+                        print(f"[AVISO] Falha no reconhecimento de gestos: {e}")
                     
                 # 3. Obter dimensões do container para redimensionamento responsivo
                 container_w = self.video_container.winfo_width()
@@ -749,21 +756,32 @@ class CameraApp(ctk.CTk):
                     self.lbl_fps.configure(text=f"FPS: {self.fps:.1f}")
                     self.frames_count = 0
                     self.fps_timer = now
-        except Exception:
-            pass  # Exceção inesperada não deve matar o loop de vídeo
+        except Exception as e:
+            print(f"[AVISO] Erro inesperado no loop de vídeo: {e}")
 
-        # Agenda a próxima captura de frame — SEMPRE reagendado para o loop nunca morrer
-        self.after(16, self.update_feed)
+        # Agenda a próxima captura de frame — SEMPRE reagendado para o loop nunca morrer.
+        # ~30 FPS (33ms) é suficiente para visualização e reduz pela metade o uso de
+        # CPU em relação a 60 FPS, sem perda perceptível de fluidez.
+        self.after(33, self.update_feed)
 
     # --- Métodos de Dicionário (Etapas 4/5) ---
-    def refresh_dictionary_list(self):
+    def refresh_dictionary_list(self, select_name=None):
         dicts = dm.list_dictionaries()
         names = [d["name"] for d in dicts]
         if names:
             self.dict_combo.configure(values=["Nenhum"] + names)
+            # Reseleciona o dicionário recém-salvo/editado, se informado
+            target = select_name if select_name and select_name in names else self.dict_combo.get()
+            if target and target in names:
+                self.dict_combo.set(target)
+                self.on_dict_select(target)
+            else:
+                self.dict_combo.set("Nenhum")
+                self.on_dict_select("Nenhum")
         else:
             self.dict_combo.configure(values=["Nenhum"])
             self.dict_combo.set("Nenhum")
+            self.on_dict_select("Nenhum")
 
     def on_dict_select(self, val):
         if val == "Nenhum":

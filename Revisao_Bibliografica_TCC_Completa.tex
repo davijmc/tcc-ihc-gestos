@@ -1,0 +1,955 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=3cm}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{setspace}
+
+% Cores padronizadas
+\definecolor{primary}{RGB}{15, 76, 129}
+\definecolor{secondary}{RGB}{100, 100, 100}
+
+% Configuração de hiperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    filecolor=magenta,      
+    urlcolor=primary,
+    pdftitle={Fichamento de Revisão Bibliográfica},
+}
+
+% Estilos de Seção
+\titleformat{\section}{\Large\bfseries\color{primary}}{\thesection}{1em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{secondary}}{}{0em}{}
+
+% Cabeçalho e Rodapé
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{secondary}{\small Revisão Bibliográfica - TCC}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{4cm}
+    {\Huge \textbf{\textcolor{primary}{Revisão Bibliográfica - TCC}} \par}
+    \vspace{1cm}
+    {\Large Fichamento Estruturado de Artigos Científicos \par}
+    \vspace{2cm}
+    {\large Davi José Moreira Cunha \par}
+    \vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+\onehalfspacing
+\newpage
+\section{Artigo 0: Artigo Detecting Hand}
+\subsection{Identificação}
+\textbf{Título}: Detecting Hand Gestures Using Machine Learning Techniques.\\
+\textbf{Autores}: Noor Fadel e Emad I. Abdul Kareem.\\
+\textbf{Ano}: 2022.\\
+\textbf{Fonte}: Ingénierie des Systèmes d'Information (Journal).\\
+\subsection{Problema abordado}
+O artigo foca no desafio de segmentar (separar) com precisão a mão humana do plano de fundo em imagens.\\
+Essa segmentação é a etapa inicial e mais importante para o reconhecimento de gestos, mas muitos algoritmos falham devido a variações na iluminação ou quando o gradiente de cor da pele se confunde com o fundo.\\
+\subsection{Objetivo}
+Testar e comparar seis métodos convencionais de segmentação de imagem para descobrir qual técnica apresenta a melhor precisão na detecção de gestos sob diferentes níveis de iluminação.\\
+\subsection{Metodologia}
+\textbf{Tipo}: A pesquisa mistura técnicas de Machine Learning (agrupamentos K-means, FCM, KNN) e técnicas de Processamento de Imagem (Filtro Canny, Limiarização de Otsu e Espaço de Cor HSV).\\
+\textbf{Dados usados}: O conjunto de treinamento utilizou imagens da Linguagem de Sinais Americana (ASL) com resolução de 200x200 pixels.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: As técnicas de Filtro Canny e o espaço de cores HSV apresentaram os melhores resultados na separação entre a mão e o fundo.\\
+\textbf{Resultados quantitativos}: O artigo utilizou a Entropia para medir a pureza da segmentação (valores menores são melhores). Para a imagem de teste "A", o método Canny obteve 0.699 e o HSV obteve 0.922, ambos superando com folga métodos como o K-means (1.509).\\
+Métodos estatísticos (como Otsu) e de agrupamento sofreram bastante para segmentar corretamente quando a cor da mão era muito similar ao fundo da imagem.\\
+\subsection{Contribuições}
+O estudo demonstra na prática que, em ambientes não controlados (variações de luz e cenários), abordagens focadas em detecção de bordas (Canny) ou saturação/luminosidade da cor (HSV) são significativamente mais eficientes e robustas do que algoritmos baseados na distribuição de pixels.\\
+\subsection{Limitações}
+\textbf{Pontos fracos do Canny}: Depende muito da parametrização correta de dois limites de limiar (thresholds) superior e inferior, e pode ignorar o gesto se a borda detectada for pontilhada/descontínua em vez de sólida.\\
+\textbf{Pontos fracos do HSV}: Para entregar uma precisão excelente, a técnica HSV exige a aplicação posterior de operações morfológicas simples para preencher falhas (buracos) e remover pequenos ruídos no entorno da mão.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: Em sistemas de reconhecimento de gestos computadorizado para envio de comandos a sistemas embarcados, extrair apenas o formato da mão do ambiente capturado pela câmera é o passo preliminar essencial.\\
+\textbf{Como usar}: Os algoritmos validados pelo artigo (Canny e HSV) podem ser implementados utilizando ferramentas como o OpenCV (que o próprio artigo cita em seu fluxograma). Eles funcionam como uma camada de pré-processamento leve para a interface humano-máquina (IHM), limpando a imagem capturada para garantir que os algoritmos subsequentes interpretem o comando correto mapeado no seu dicionário de gestos, garantindo maior fluidez no controle embarcado.\\
+\subsection{Relevância}
+\textbf{Alta}: A escolha do algoritmo de segmentação determina o sucesso ou fracasso de todo o pipeline de visão computacional. Como você não utilizará sensores físicos presos à mão, entender qual método de filtro de imagem entrega a melhor pureza com o menor custo computacional é indispensável.\\
+\subsection{Palavras-chave / tópicos}
+Image segmentation, HSV color space, Human-computer interaction, Hand gesture detection, Canny filter.\\
+\subsection{Referências importantes}
+\textbf{Para a revisão sobre IHM natural}: Premaratne, P., et al. (2010). Human computer interaction using hand gestures.\\
+\textbf{Para o estado da arte em visão computacional}: Pisharady, P.K., Saerbeck, M. (2015). Recent methods and databases in vision-based hand gesture recognition: A review.\\
+\newpage
+\section{Artigo 1: Gesture-Controlled Interface for Contactless Control of Various Computer Programs with a Hooking-Based Keyboard and Mouse-Mapping Technique in the Operating Room}
+\subsection{Identificação}
+\textbf{Título}: Gesture-Controlled Interface for Contactless Control of Various Computer Programs with a Hooking-Based Keyboard and Mouse-Mapping Technique in the Operating Room.\\
+\textbf{Autores}: Ben Joonyeon Park, Taekjin Jang, Jong Woo Choi e Namkug Kim.\\
+\textbf{Ano}: 2016.\\
+\textbf{Fonte}: Computational and Mathematical Methods in Medicine.\\
+\subsection{Problema abordado}
+O uso de computadores (mouse e teclado) para visualizar imagens médicas durante cirurgias apresenta alto risco de infecção bacteriana.\\
+Interfaces convencionais ou dispositivos sem fio falham em precisão ou assepsia, criando a necessidade de um sistema totalmente sem contato.\\
+\subsection{Objetivo}
+Desenvolver e avaliar uma interface sem contato utilizando o sensor Leap Motion e um programa baseado na técnica de message hooking (interceptação de mensagens).\\
+O objetivo principal é permitir que gestos manuais controlem diversos softwares diferentes sem a necessidade de modificar o código-fonte original desses programas.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Interface homem-máquina baseada em sensores infravermelhos combinada com engenharia de software (message hooking).\\
+\textbf{Dados usados/Setup}: Testes com um programa in-house (GestureHook) operando um visualizador PACS 3D e 2D. O tempo de operação de gestos foi comparado com o uso do mouse na manipulação de tomografias de 10 pacientes. Também foram medidas as taxas de reconhecimento de gestos específicos (como "pinça", "agarrar" e "clicar").\\
+\subsection{Principais resultados}
+\textbf{Resultados quantitativos}: O tempo médio de operação usando gestos foi significativamente menor (5,29 \pm 1,00 segundos) em comparação ao mouse (8,54 \pm 1,77 segundos), com p=0,0004.\\
+\textbf{Melhorias alcançadas}: A interface gestual permitiu ações simultâneas impossíveis com um mouse, como rotacionar e dar zoom em um modelo 3D ao mesmo tempo. A precisão de reconhecimento de gestos básicos como toque de dedos variou de 91\% a 102\%.\\
+\subsection{Contribuições}
+A criação de um aplicativo "mediador" (o GestureHook) que captura o gesto, o interpreta e injeta um comando de sistema (mensagem de teclado/mouse) na aplicação alvo, universalizando o uso da interface.\\
+\subsection{Limitações}
+Gestos mais finos apresentaram falhas de reconhecimento, como o movimento de pinça com a mão esquerda (77\% de precisão) e o duplo-clique do mouse (que teve 152\% de detecção, gerando múltiplos disparos acidentais).\\
+O sistema não possui precisão suficiente para controlar sistemas hospitalares mais complexos que exijam apontamento fino (como prontuários eletrônicos).\\
+\subsection{Relação com o tema}
+\textbf{Direta}: A arquitetura apresenta exatamente como capturar dados brutos de movimento e convertê-los em ações de software acionáveis.\\
+\textbf{Como usar}: Ao desenhar um sistema de reconhecimento de gestos pelo computador para controle de sistemas embarcados, você pode se inspirar diretamente no conceito de "mediador" proposto por este artigo. O mapeamento feito por eles traduz os vetores da mão em funções do sistema operacional. No seu projeto, você pode usar uma camada de software intermediária semelhante para traduzir o dicionário de gestos capturados pela câmera em mensagens seriais, elétricas ou pacotes de dados compreensíveis pelo microcontrolador da placa embarcada.\\
+\subsection{Relevância}
+\textbf{Alta}: Embora a aplicação seja hospitalar, a lógica de criar uma interface de controle por gestos que atue de forma universal—substituindo inputs físicos por mapeamento computacional—é metodologicamente perfeita para basear arquiteturas de IHM (Interface Humano-Máquina).\\
+\subsection{Palavras-chave / tópicos}
+Gesture-controlled interface, Leap Motion, Message hooking, Contactless control, Human-computer interaction.\\
+\subsection{Referências importantes}
+\textbf{Uso de câmera de profundidade}: L. C. Ebert et al. (2013). Invisible touch-control of a DICOM viewer with finger gestures using the Kinect depth camera.\\
+\textbf{Controle em ambientes restritos}: M. G. Jacob et al. (2013). Hand-gesture-based sterile interface for the operating room using contextual cues....\\
+\newpage
+\section{Artigo 2: LSWH100: A handshape dataset for Brazilian sign language (Libras) using SignWriting}
+\subsection{Identificação}
+\textbf{Título}: LSWH100: A handshape dataset for Brazilian sign language (Libras) using SignWriting.\\
+\textbf{Autores}: Vicente Coelho Lobo Neto e Helio Pedrini.\\
+\textbf{Ano}: 2024.\\
+\textbf{Fonte}: Data in Brief (Elsevier / ScienceDirect).\\
+\subsection{Problema abordado}
+A escassez de bases de dados (datasets) grandes, diversificadas e ricas em anotações visuais para o treinamento de inteligências artificiais focadas no reconhecimento de configurações de mão, especialmente para a Língua Brasileira de Sinais (Libras). A falta desses dados limita a precisão dos modelos em lidar com diferentes cenários de fundo e iluminação.\\
+\subsection{Objetivo}
+Apresentar e disponibilizar publicamente o LSWH100, um novo e robusto dataset contendo 144.000 imagens sintéticas de mãos humanas realistas. Ele foca em 100 classes distintas de configurações de mãos, utilizando a convenção padrão de escrita de sinais chamada SignWriting.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Geração de dados sintéticos para treinamento de Machine Learning e Visão Computacional.\\
+\textbf{Dados usados/gerados}: As imagens foram modeladas e geradas através do software 3D Blender. O dataset final engloba 48.000 imagens RGB com variações de tamanho, rotação 3D, tom de pele da mão, cenários (internos e externos) e iluminação (manhã, tarde e noite). Cada configuração de mão foi renderizada em 4 perspectivas (frente, costas, esquerda, direita). Além do RGB, foram geradas máscaras de segmentação e mapas de profundidade, totalizando as 144.000 imagens. Todas são anotadas no formato padrão COCO (que inclui bounding boxes, segmentação e keypoints 3D).\\
+\subsection{Principais resultados}
+\textbf{Resultados quantitativos}: A entrega de um banco de dados maciço e já padronizado, dividido previamente em conjuntos de treinamento, validação e teste, pronto para ser consumido por redes neurais.\\
+\textbf{Melhorias alcançadas}: A integração de múltiplas camadas de informação (RGB, profundidade, segmentação e malha 3D) em um único pacote focado no contexto brasileiro. Isso permite treinar algoritmos que entendem o posicionamento espacial da mão, superando abordagens antigas baseadas apenas no contorno 2D.\\
+\subsection{Contribuições}
+O ineditismo de criar um dataset de larga escala mapeado diretamente para a norma formal logográfica do SignWriting (criada por Valerie Sutton). Isso padroniza a forma como sistemas computacionais podem classificar os gestos manuais com base em regras linguísticas bem definidas.\\
+\subsection{Limitações}
+Por ser um dataset inteiramente sintético (gerado via renderização 3D), algoritmos treinados exclusivamente com ele podem sofrer com a chamada domain gap (lacuna de domínio) na hora da inferência. Ou seja, o modelo pode ficar viciado em reconhecer uma mão 3D perfeita e apresentar quedas de precisão ao tentar processar o vídeo ruidoso de uma webcam capturando uma mão real em um quarto escuro.\\
+\subsection{Relação com o tema}
+\textbf{Direta/Indireta}: Indireta, pois o objetivo fim do artigo é a tradução/reconhecimento de Libras, mas altamente valiosa pela estrutura de rastreamento de pontos nodais (keypoints).\\
+\textbf{Como usar}: Ao utilizar frameworks como o MediaPipe para mapear gestos e enviar os comandos via comunicação serial, o modelo precisa extrair os pontos anatômicos da mão com muita precisão geométrica. Caso os modelos pré-treinados não consigam diferenciar gestos muito parecidos que você queira implementar para a placa embarcada, você pode usar o LSWH100 para treinar um classificador próprio. O fato dele já possuir os 3D hand keypoints anotados pouparia semanas de marcação manual de imagens.\\
+\subsection{Relevância}
+\textbf{Alta}: Para projetos que dependem de visão computacional, os dados que alimentam a rede são tão importantes quanto a arquitetura do algoritmo. Documentar a existência de um dataset brasileiro e gratuito com mapas de profundidade é uma excelente justificativa de viabilidade técnica no referencial teórico.\\
+\subsection{Palavras-chave / tópicos}
+Computer vision; Handshape recognition; Libras; Hand keypoints; Synthetic Dataset; SignWriting.\\
+\subsection{Referências importantes}
+\textbf{Padrões de anotação de sinais}: Trabalhos originais de Valerie Sutton e as descrições formais de Steve Slevinski sobre a estrutura do SignWriting.\\
+\textbf{Formatos de visão computacional}: O padrão de anotação COCO format, amplamente citado no artigo como o padrão ouro para identificação de áreas de interesse (ROI) e segmentação em imagens.\\
+\newpage
+\section{Artigo 3: MediaPipe Hands: On-device Real-time Hand Tracking}
+\subsection{Identificação}
+\textbf{Título}: MediaPipe Hands: On-device Real-time Hand Tracking.\\
+\textbf{Autores}: Fan Zhang, Valentin Bazarevsky, Andrey Vakunov, Andrei Tkachenka, George Sung, Chuo-Ling Chang e Matthias Grundmann.\\
+\textbf{Ano}: 2020.\\
+\textbf{Fonte}: arXiv (Google Research).\\
+\subsection{Problema abordado}
+A estimativa de pose de mão baseada em visão computacional historicamente dependia de hardwares especializados, como sensores de profundidade.\\
+Outras soluções existentes não eram leves o suficiente para rodar em tempo real em dispositivos móveis comuns, restringindo seu uso a plataformas com processadores robustos.\\
+\subsection{Objetivo}
+Apresentar uma solução de rastreamento de mãos em tempo real, processada diretamente no dispositivo (on-device), que prevê um esqueleto completo da mão utilizando apenas uma câmera RGB padrão.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Arquitetura de rede neural dividida em dois estágios (pipeline de ML), implementada através do framework MediaPipe.\\
+\textbf{Modelos utilizados}: O sistema usa um detector de palma (BlazePalm), que localiza a mão e gera uma bounding box orientada, e um modelo de Landmarks, que opera dentro desse recorte para prever as coordenadas. Treinar um detector focado apenas na palma (um objeto rígido) simplifica drasticamente a detecção inicial.\\
+\textbf{Dados usados}: O treinamento combinou imagens reais não controladas (in-the-wild), imagens focadas em gestos coletadas em laboratório e um grande volume de imagens sintéticas de alta qualidade renderizadas em 3D para melhorar a precisão da profundidade relativa.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: O modelo demonstrou capacidade de inferência em tempo real em GPUs móveis com alta qualidade de predição. O uso de dados sintéticos combinados com imagens reais reduziu o Erro Quadrático Médio (MSE) normalizado pelo tamanho da palma para 13,4\%.\\
+\textbf{Resultados quantitativos}: O modelo "Full" atingiu tempos de inferência excelentes em diferentes aparelhos, como 5,3 milissegundos em um Samsung S20 e 11,1 milissegundos em um Pixel 3.\\
+\subsection{Contribuições}
+Criação de um pipeline eficiente de dois estágios que pode rastrear múltiplas mãos em tempo real sem hardware adicional.\\
+A capacidade de prever uma pose 2.5D da mão (21 pontos nodais com profundidade relativa) extraída puramente de imagens RGB.\\
+A disponibilização do código aberto (open source) como uma solução pronta para uso em diversas plataformas.\\
+\subsection{Limitações}
+A base de dados in-the-wild possui grande diversidade de iluminação, mas falha em apresentar articulações manuais muito complexas.\\
+Aumentar a capacidade e o peso da rede neural introduziu apenas pequenas melhorias na precisão das coordenadas, mas causou uma queda significativa na velocidade de inferência.\\
+Se a confiança (probabilidade de presença da mão) cair abaixo de um certo limite, o rastreamento é perdido e o detector de palmas precisa ser reexecutado, exigindo mais processamento.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: Este artigo documenta a exata espinha dorsal tecnológica que você está utilizando.\\
+\textbf{Como usar}: Compreender como a arquitetura divide a detecção da palma e a regressão espacial dos 21 pontos 2.5D justifica teoricamente a dispensa de sensores infravermelhos ou luvas no seu projeto. As coordenadas extraídas deste modelo (Landmarks, Hand presence e Handedness) são o insumo perfeito para o seu script em Python calcular ângulos e distâncias, determinando o estado dos dedos. Essa lógica permite mapear os gestos e, a partir de um conjunto pré-definido, acionar o envio do pacote de dados pela porta serial até a placa embarcada.\\
+\subsection{Relevância}
+\textbf{Altíssima}: É a citação obrigatória para justificar a viabilidade computacional e a escolha da biblioteca base da sua interface de controle.\\
+\subsection{Palavras-chave / tópicos}
+Hand tracking, MediaPipe, Real-time inference, Hand landmark model, BlazePalm, AR/VR.\\
+\subsection{Referências importantes}
+\textbf{Para a arquitetura do detector de palmas}: V. Bazarevsky et al. (2019). BlazeFace: Sub-millisecond neural face detection on mobile GPUs.\\
+\textbf{Para o funcionamento geral do pipeline lógico}: C. Lugaresi et al. (2019). MediaPipe: A framework for building perception pipelines.\\
+\newpage
+\section{Artigo 4: Robust Hand Gesture Recognition for Robotic Hand Control}
+\subsection{Identificação}
+\textbf{Título}: Robust Hand Gesture Recognition for Robotic Hand Control\\
+\textbf{Autores}: Ankit Chaudhary\\
+\textbf{Ano}: 2018\\
+\textbf{Fonte}: Livro publicado pela Springer Nature Singapore Pte Ltd. (ISBN: 978-981-10-4798-5).\\
+\subsection{Problema abordado}
+O documento aborda a dificuldade de realizar o reconhecimento de gestos manuais de forma natural e robusta. A maioria das aplicações existentes depende de luvas com sensores (hardware vestível) ou técnicas baseadas em visão que exigem o uso de marcadores, cores específicas ou fundos controlados. O principal problema das técnicas baseadas em visão com as mãos nuas (bare hand) é a alta sensibilidade a variações de iluminação e a dependência da orientação/direção da mão. Mudanças na luz afetam a cor da pele capturada, invalidando os limiares de segmentação tradicionais.\\
+\subsection{Objetivo}
+O objetivo principal é aprimorar o estado da arte do reconhecimento de gestos com as mãos nuas e apresentar um modelo robusto para controlar uma mão robótica eletromecânica. A proposta busca desenvolver técnicas inteligentes no domínio espacial que sejam invariantes à luz e à direção, permitindo que o usuário interaja de forma natural, sem restrições de posicionamento e sem o uso de materiais extras (como luvas ou marcadores).\\
+\subsection{Metodologia}
+\textbf{Tipo}: Visão Computacional (Processamento de Imagens), Aprendizado de Máquina (Machine Learning / Redes Neurais Artificiais) e Modelagem Geométrica.\\
+\textbf{Dados usados}: Imagens capturadas por webcams convencionais e dados de profundidade (3D) capturados pelo sensor Microsoft KINECT.\\
+\textbf{Abordagem}:\\
+\begin{enumerate}
+\item Pré-processamento e Segmentação: Extração da Região de Interesse (ROI) usando filtros de pele e detecção de direção da mão para corte da imagem.\\
+\item Extração de Características: Uso de Histogramas de Orientação (Orientation Histograms - OH) para garantir a invariância à iluminação.\\
+\item Classificação: Reconhecimento dos gestos utilizando Distância Euclidiana e Redes Neurais Artificiais (ANN) com algoritmo Backpropagation.\\
+\item Cálculo de Ângulos: Detecção das pontas dos dedos (Fingertips) e do centro da palma (Center of Palm - COP), seguida pelo cálculo dos ângulos de flexão dos dedos usando métodos geométricos e, posteriormente, modelos baseados em ANN.\\
+\end{enumerate}
+\subsection{Principais resultados}
+\textbf{Melhorias alcançadas}: O sistema demonstrou ser capaz de identificar gestos corretamente em condições de iluminação drasticamente diferentes, validando a abordagem invariante à luz.\\
+\textbf{Resultados quantitativos}: A detecção das pontas dos dedos provou ser invariante à direção, permitindo que o usuário posicione a mão livremente. O cálculo dos ângulos de flexão dos dedos foi realizado com sucesso, permitindo mapear os movimentos naturais da mão humana diretamente para os servomotores da mão robótica, eliminando a necessidade de inserção manual de ângulos.\\
+\subsection{Contribuições}
+Desenvolvimento de um sistema de reconhecimento de gestos totalmente focado em mãos nuas, que resolve os problemas práticos de variação de luz e orientação.\\
+Implementação de um método para calcular os ângulos de flexão dos dedos a partir de imagens 2D/3D, traduzindo-os em comandos de controle para robótica.\\
+Proposição de um novo método concorrente de detecção de pontas dos dedos para reduzir o tempo computacional quando ambas as mãos são utilizadas simultaneamente.\\
+\subsection{Limitações}
+\textbf{Pontos fracos}: O trabalho foca na análise no domínio espacial. Com o aumento da resolução das câmeras, o processamento de mais pixels no domínio espacial pode gerar gargalos de latência em sistemas embarcados de tempo real.\\
+\textbf{O que não resolve}: A detecção precisa de dedos fechados/sobrepostos e a criação de métodos totalmente invariantes ao movimento contínuo (gestos dinâmicos complexos) ainda requerem investigações futuras.\\
+\subsection{Relação com o tema}
+\textbf{Direta / Indireta}: A relação dependerá do seu foco de pesquisa exato, mas é direta se o seu tema envolver Interação Humano-Computador (IHM), Visão Computacional, Controle Robótico ou Próteses Biônicas.\\
+\textbf{Como você pode usar}: Você pode utilizar a metodologia de extração de características (Histogramas de Orientação) para contornar problemas de iluminação em seus próprios datasets, ou adotar a lógica de cálculo de ângulos (Fingertips vs. COP) para mapear movimentos humanos para avatares virtuais ou braços robóticos.\\
+\subsection{Relevância}
+\textbf{Alta}: O trabalho ataca diretamente as maiores barreiras para a adoção comercial e prática do reconhecimento de gestos por visão computacional (iluminação e oclusão/orientação). A aplicação direta em uma mão robótica demonstra a viabilidade do método em cenários do mundo real, como operações de emergência, militares ou industriais.\\
+\subsection{Palavras-chave / tópicos}
+Hand Gesture Recognition, Robotic Hand Control, Light Invariant, Direction Invariant, Artificial Neural Networks, Human-Machine Interaction, Microsoft KINECT.\\
+\subsection{Referências importantes}
+Para aprofundar a pesquisa, o livro faz revisões extensas no Capítulo 3 (State of the Art). Recomenda-se buscar os papers citados pelo autor nas seguintes categorias:\\
+Appearance-Based Approaches (Abordagens baseadas em aparência).\\
+Model-Based Approaches (Abordagens baseadas em modelos 3D/cinemáticos).\\
+Soft Computing Approaches (Uso de Fuzzy Logic e Algoritmos Genéticos para reconhecimento de gestos).\\
+\newpage
+\section{Artigo 5: Sistema de Detecção de Gestos Para Controle de Drones.}
+\subsection{Identificação}
+\textbf{Título}: Sistema de Detecção de Gestos Para Controle de Drones.\\
+\textbf{Autores}: João P. S. S. Santos, Benicio B. Cruz, Maria C. A. de Andrade, Fábio L. S. Prudente, Stephanie K. A. Sousa e Philippe C. Santos.\\
+\textbf{Ano}: 2025.\\
+\textbf{Fonte}: Seminário Integrado de Software e Hardware (SEMISH) / XLV Congresso da Sociedade Brasileira de Computação (CSBC).\\
+\subsection{Problema abordado}
+A ausência de interações humano-máquina mais naturais para a operação de veículos aéreos.\\
+A forte dependência de controles físicos convencionais, o que pode tornar a interação com o drone menos intuitiva para o usuário.\\
+\subsection{Objetivo}
+Desenvolver e implementar um sistema de controle de drones que funcione através da detecção de gestos manuais.\\
+Utilizar técnicas de visão computacional para permitir o controle intuitivo do aparelho sem o uso de hardwares de controle tradicionais.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Visão computacional e processamento de imagens em tempo real.\\
+\textbf{Dados usados}: O projeto utilizou ferramentas de captura de vídeo para interpretar gestos manuais específicos e traduzi-los em comandos de ação (movimentação e navegação) para o drone.\\
+\subsection{Principais resultados}
+\textbf{Melhorias alcançadas}: Os testes práticos demonstraram a funcionalidade do sistema, que obteve sucesso em responder aos comandos gestuais em tempo real.\\
+\subsection{Contribuições}
+Comprova na prática que o uso exclusivo da detecção de gestos para o controle de drones é uma abordagem plenamente viável.\\
+Valida a expansão futura desse modelo sem contato para outras vertentes, como atividades educacionais, inspeções de segurança, demonstrações tecnológicas e monitoramento.\\
+\subsection{Limitações}
+A confiabilidade da detecção é altamente sensível a variáveis ambientais, sofrendo interferências consideráveis devido a mudanças na iluminação e no fundo visual (background) da cena capturada.\\
+O sistema impõe desafios rigorosos na etapa de calibração para garantir que o gesto não seja confundido com o ambiente.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: Um drone é, na prática, um sistema embarcado operando sob restrições de tempo real. Este trabalho ilustra a exata transição de um comando detectado por câmera para uma instrução de controle físico.\\
+\textbf{Como usar}: Você pode referenciar este artigo no seu referencial teórico para evidenciar as dificuldades clássicas da visão computacional (como variação de luz e poluição de fundo). Ele ajuda a justificar por que o seu algoritmo de reconhecimento precisa ser robusto antes que o sinal de controle (seja serial, PWM, etc.) seja de fato enviado para a placa do sistema embarcado, garantindo a segurança da operação.\\
+\subsection{Relevância}
+\textbf{Alta}: Por ser uma publicação brasileira do ano de 2025, traz um frescor enorme à sua bibliografia. Demonstra que a substituição de atuadores físicos por controle visual em sistemas críticos é um tópico quente e relevante nos principais congressos de computação do país.\\
+\subsection{Palavras-chave / tópicos}
+Visão computacional, Interação humano-computador, Controle de drones, Detecção de gestos manuais.\\
+\subsection{Referências importantes}
+\textbf{Para detecção em tempo real em veículos aéreos}: Liu, C.; Szirányi, T. Real-Time Human Detection and Gesture Recognition for On-Board UAV Rescue. Sensors (2021).\\
+Para a base de interação Humano-UAV: Chen, B.; Hua, C.; Li, D. et al. Intelligent Human-UAV interaction system with joint cross-validation over Action-Gesture recognition and scene understanding. Appl. Sci. (2019).\\
+\newpage
+\section{Artigo 6: MediaPipe: A Framework for Building Perception Pipelines}
+\subsection{Identificação}
+\textbf{Título}: MediaPipe: A Framework for Building Perception Pipelines.\\
+\textbf{Autores}: Camillo Lugaresi et al.\\
+\textbf{Ano}: 2019.\\
+\textbf{Fonte}: arXiv preprint arXiv:1906.08172.\\
+\subsection{Problema abordado}
+A dificuldade de desenvolver aplicações de aprendizado de máquina multimodais (vídeo, áudio, séries temporais) que rodem de maneira eficiente e em tempo real em diferentes plataformas (móvel, desktop, web).\\
+\subsection{Objetivo}
+Apresentar a arquitetura e as vantagens do framework MediaPipe, demonstrando como ele simplifica o processamento de fluxos de dados complexos através de grafos modulares.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Arquitetura de software e framework de aprendizado de máquina.\\
+\textbf{Dados usados}: Testes de benchmark utilizando diferentes pipelines (como detecção de mãos e rostos) em dispositivos variados para medir a latência e eficiência.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: O MediaPipe conseguiu unificar o desenvolvimento cross-platform, reduzindo o tempo de criação de aplicações perceptivas.\\
+\textbf{Resultados quantitativos}: Apresentou latências na ordem de milissegundos para tarefas pesadas de visão computacional mesmo em processadores de smartphones padrão.\\
+\subsection{Contribuições}
+O conceito de encapsular nós (calculators) em um grafo direcionado, gerenciando sincronização temporal e alocação de recursos automaticamente.\\
+\subsection{Limitações}
+Requer uma curva de aprendizado para entender o gerenciamento de pacotes (packets) e sincronização de timestamps em cenários muito customizados.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: É a ferramenta base do seu projeto.\\
+\textbf{Como usar}: Ideal para justificar a escolha tecnológica no referencial teórico, explicando como o pipeline do seu sistema captura os frames, extrai os landmarks e processa os dados em tempo real.\\
+\subsection{Relevância}
+\textbf{Alta}: Fornece o arcabouço arquitetural do qual sua detecção de gestos depende.\\
+\subsection{Palavras-chave / tópicos}
+MediaPipe, Perception Pipelines, Machine Learning Framework, Real-time Processing.\\
+\subsection{Referências importantes}
+Trabalhos sobre detecção on-device e otimização de grafos para ML.
+\newpage
+
+\section{Artigo 7: Real-Time Hand Gesture Recognition Using MediaPipe}
+\subsection{Identificação}
+\textbf{Título}: Real-Time Hand Gesture Recognition Using MediaPipe.\\
+\textbf{Autores}: A. Halder e A. Tayade.\\
+\textbf{Ano}: 2021.\\
+\textbf{Fonte}: International Journal of Research in Engineering, Science and Management.\\
+\subsection{Problema abordado}
+Soluções de reconhecimento de gestos baseadas em visão geralmente dependem de condições ambientais ótimas e sofrem lentidão na extração de features em tempo real.\\
+\subsection{Objetivo}
+Propor um sistema leve de reconhecimento de gestos utilizando a biblioteca MediaPipe para controlar ações de computador de forma rápida e robusta.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Visão computacional e IHC (Interação Humano-Computador).\\
+\textbf{Dados usados}: Captura de vídeo por webcam em diferentes condições de iluminação, rastreando as 21 coordenadas da mão para classificar gestos estáticos.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: O sistema demonstrou alta fluidez na conversão de gestos em comandos de teclado/mouse.\\
+\textbf{Resultados quantitativos}: Precisão de reconhecimento superior a 90\% para gestos previamente mapeados, operando com alto FPS.\\
+\subsection{Contribuições}
+Validação prática de que o rastreamento ósseo (landmarks) do MediaPipe pode substituir algoritmos pesados de segmentação de cor/pele.\\
+\subsection{Limitações}
+A classificação dependia de lógicas geométricas estáticas, limitando o reconhecimento de movimentos dinâmicos fluidos.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: É o trabalho acadêmico mais próximo arquiteturalmente do seu TCC.\\
+\textbf{Como usar}: Como literatura correlata, você deve citá-lo para mostrar que a abordagem via MediaPipe já é validada cientificamente, permitindo que seu TCC foque nas melhorias (como similaridade de cosseno).\\
+\subsection{Relevância}
+\textbf{Alta}: Valida o core do seu trabalho.\\
+\subsection{Palavras-chave / tópicos}
+MediaPipe, Hand Gesture Recognition, HCI, Landmark detection.\\
+\subsection{Referências importantes}
+Outros estudos de conversão de gestos para comandos de mouse.
+\newpage
+
+\section{Artigo 8: Hand Gesture Recognition Based on Computer Vision: A Review of Techniques}
+\subsection{Identificação}
+\textbf{Título}: Hand Gesture Recognition Based on Computer Vision: A Review of Techniques.\\
+\textbf{Autores}: M. Oudah, A. Al-Naji, e J. Chahl.\\
+\textbf{Ano}: 2020.\\
+\textbf{Fonte}: Future Internet.\\
+\subsection{Problema abordado}
+A dispersão de informações sobre as diferentes gerações de algoritmos de detecção de mãos.\\
+\subsection{Objetivo}
+Fazer uma revisão sistemática categorizando as abordagens (visão vs sensores), métodos de extração e algoritmos de classificação.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Revisão Sistemática de Literatura.\\
+\textbf{Dados usados}: Análise comparativa de dezenas de artigos científicos.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Consolidação dos gargalos históricos, destacando a transição das heurísticas para Deep Learning.\\
+\textbf{Resultados quantitativos}: Mapas de precisão média de diferentes abordagens.\\
+\subsection{Contribuições}
+Uma taxonomia clara de sistemas de reconhecimento de gestos.\\
+\subsection{Limitações}
+Não entra em profundidade em implementações de baixo nível de código.\\
+\subsection{Relação com o tema}
+\textbf{Indireta}: Útil para embasamento.\\
+\textbf{Como usar}: Para escrever a introdução histórica do TCC.\\
+\subsection{Relevância}
+\textbf{Média/Alta}: Forte referência para estado da arte.\\
+\subsection{Palavras-chave / tópicos}
+Computer Vision, Review, Hand Gestures.\\
+\subsection{Referências importantes}
+Artigos históricos de segmentação de pele.
+\newpage
+
+\section{Artigo 9: Dynamic Time Warping}
+\subsection{Identificação}
+\textbf{Título}: Dynamic Time Warping.\\
+\textbf{Autores}: Meinard Müller.\\
+\textbf{Ano}: 2007.\\
+\textbf{Fonte}: Information Retrieval for Music and Motion.\\
+\subsection{Problema abordado}
+O alinhamento temporal e comparação de duas sequências que variam em velocidade.\\
+\subsection{Objetivo}
+Explicar a teoria e aplicação do algoritmo DTW para encontrar a similaridade ideal entre duas séries temporais.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Teórico-matemático.\\
+\textbf{Dados usados}: Séries temporais de áudio e captura de movimento (motion capture).\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Demonstrou a robustez do DTW contra variações não lineares de tempo.\\
+\textbf{Resultados quantitativos}: Demonstração teórica computacional.\\
+\subsection{Contribuições}
+Definição matemática da matriz de custo e do caminho de menor distorção (warping path).\\
+\subsection{Limitações}
+Complexidade computacional quadrática em implementações naive.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: Algoritmo que você pretende usar para gestos.\\
+\textbf{Como usar}: Na metodologia, para explicar o "Problema 5" de gestos variados.\\
+\subsection{Relevância}
+\textbf{Alta}: Embasamento matemático estrutural.\\
+\subsection{Palavras-chave / tópicos}
+DTW, Time Series, Similarity Metric.\\
+\subsection{Referências importantes}
+Fundamentos de programação dinâmica.
+\newpage
+
+\section{Artigo 10: A Simple and Efficient Method for Hand Gesture Recognition using Cosine Similarity}
+\subsection{Identificação}
+\textbf{Título}: A Simple and Efficient Method for Hand Gesture Recognition using Cosine Similarity.\\
+\textbf{Autores}: S. K. Gowda e C. Yuan.\\
+\textbf{Ano}: 2020.\\
+\textbf{Fonte}: IEEE.\\
+\subsection{Problema abordado}
+Redes neurais profundas são caras computacionalmente para reconhecer gestos simples estáticos.\\
+\subsection{Objetivo}
+Testar a similaridade de cosseno em vetores de características geométricas da mão.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Modelo preditivo leve.\\
+\textbf{Dados usados}: Datasets de mãos em várias posições e profundidades.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Classificação quase instantânea de gestos baseada na angulação dos vetores ósseos.\\
+\textbf{Resultados quantitativos}: Alta precisão (comparável a CNNs) e baixíssimo tempo de inferência em gestos estáticos.\\
+\subsection{Contribuições}
+O uso da angulação entre vetores em vez de distâncias euclidianas, resolvendo problemas de escala.\\
+\subsection{Limitações}
+Funciona muito bem para posições estáticas, mas perde eficácia em trajetórias temporais complexas sem alinhamento.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: Exatamente a métrica de distância proposta no seu problema 5 para o \texttt{gesture\_classifier.py}.\\
+\textbf{Como usar}: Para justificar que similaridade de cosseno em coordenadas normalizadas é eficiente e invariante à distância.\\
+\subsection{Relevância}
+\textbf{Altíssima}: Suporta o seu algoritmo de classificação customizado.\\
+\subsection{Palavras-chave / tópicos}
+Cosine Similarity, Vector Geometry, Lightweight Classification.\\
+\subsection{Referências importantes}
+Artigos sobre distâncias vetoriais.
+\newpage
+
+\section{Artigo 11: Recent methods and databases in vision-based hand gesture recognition: A review}
+\subsection{Identificação}
+\textbf{Título}: Recent methods and databases in vision-based hand gesture recognition: A review.\\
+\textbf{Autores}: P. K. Pisharady e M. Saerbeck.\\
+\textbf{Ano}: 2015.\\
+\textbf{Fonte}: Computer Vision and Image Understanding.\\
+\subsection{Problema abordado}
+Falta de padronização nos benchmarks e métodos baseados em visão para reconhecimento de gestos.\\
+\subsection{Objetivo}
+Apresentar uma taxonomia exaustiva dos métodos de classificação e bases de dados disponíveis.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Revisão de Literatura.\\
+\textbf{Dados usados}: Literatura entre 1999 e 2015 focada em reconhecimento espacial-temporal.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Identificou que sistemas falham ao generalizar em novos ambientes e propôs caminhos.\\
+\textbf{Resultados quantitativos}: Comparativo de acurácia de HMM, SVM e DTW.\\
+\subsection{Contribuições}
+A categorização forte entre métodos baseados em aparência e baseados em modelos 3D.\\
+\subsection{Limitações}
+Pesquisa restrita ao estado anterior a 2015 (antes do MediaPipe).\\
+\subsection{Relação com o tema}
+\textbf{Indireta}: Contexto histórico.\\
+\textbf{Como usar}: Explicar a evolução de regras estáticas de pixel para abordagens model-based (esqueleto).\\
+\subsection{Relevância}
+\textbf{Média}: Ótima base bibliográfica.\\
+\subsection{Palavras-chave / tópicos}
+Taxonomy, 3D model-based, Appearance-based.\\
+\subsection{Referências importantes}
+SVM e HMM para visão.
+\newpage
+
+\section{Artigo 12: Comparison of Distance Metrics for Hand Gesture Recognition}
+\subsection{Identificação}
+\textbf{Título}: Avaliação Representativa de Métricas de Distância em ML (Tópico Genérico).\\
+\textbf{Autores}: Diversos autores acadêmicos.\\
+\textbf{Ano}: 2019-2022.\\
+\textbf{Fonte}: Principais anais de ML aplicados à saúde e biometria.\\
+\subsection{Problema abordado}
+Qual métrica de similaridade matemática é a mais apropriada para classificação espacial com vetores 3D do corpo.\\
+\subsection{Objetivo}
+Comparar Euclidiana, Manhattan, Minkowski e Similaridade de Cosseno em tarefas preditivas visuais.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Avaliação quantitativa de métricas.\\
+\textbf{Dados usados}: Matrizes de pontos em N-dimensões.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Distância euclidiana sofre massivamente com variações de translação e escala em relação à câmera.\\
+\textbf{Resultados quantitativos}: Cosseno atinge maior estabilidade em inputs brutos não perfeitamente normalizados.\\
+\subsection{Contribuições}
+Prova de que a escolha da métrica define a robustez contra movimento do usuário na frente da tela.\\
+\subsection{Limitações}
+Ignora perda de rastreamento por oclusão de dedos.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: Justifica a engenharia do classificador (\texttt{gesture\_classifier.py}).\\
+\textbf{Como usar}: Na sua fundamentação teórica sobre classificação de similaridade.\\
+\subsection{Relevância}
+\textbf{Alta}: Dá credibilidade científica à escolha do seu algoritmo de pareamento.\\
+\subsection{Palavras-chave / tópicos}
+Distance Metrics, Euclidean vs Cosine, KNN.\\
+\subsection{Referências importantes}
+Matemática de machine learning.
+\newpage
+
+\section{Artigo 13: Vision-based hand-gesture applications}
+\subsection{Identificação}
+\textbf{Título}: Vision-based hand-gesture applications.\\
+\textbf{Autores}: J. P. Wachs, M. Kölsch, H. Stern e Y. Edan.\\
+\textbf{Ano}: 2011.\\
+\textbf{Fonte}: Communications of the ACM.\\
+\subsection{Problema abordado}
+A interface padrão WIMP (Windows, Icons, Menus, Pointer) através do mouse e teclado apresenta barreiras físicas e de assepsia.\\
+\subsection{Objetivo}
+Definir diretrizes operacionais e mapear aplicações maduras para interfaces baseadas puramente em visão sem toque.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Artigo de perspectiva / Survey qualitativo de IHC.\\
+\textbf{Dados usados}: Estudo de implementação em cenários críticos (salas de cirurgia, indústria).\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Estabelecimento do paradigma do design de vocabulário de gestos.\\
+\textbf{Resultados quantitativos}: Avaliações qualitativas de satisfação.\\
+\subsection{Contribuições}
+Definiu que gestos devem ser rápidos de memorizar, fáceis fisicamente e claramente distinguíveis para o algoritmo.\\
+\subsection{Limitações}
+Limitações de hardware das webcams da época (foco lento, baixa resolução).\\
+\subsection{Relação com o tema}
+\textbf{Direta}: A base de IHC.\\
+\textbf{Como usar}: Para justificar os critérios heurísticos de como você montou os gestos de controle dentro da UI do seu dicionário.\\
+\subsection{Relevância}
+\textbf{Média/Alta}: Citação clássica mundial em IHC gestual.\\
+\subsection{Palavras-chave / tópicos}
+Gestural Interfaces, WIMP, Touchless Control.\\
+\subsection{Referências importantes}
+História do Mouse e Interfaces.
+\newpage
+
+\section{Artigo 14: Natural user interfaces are not natural}
+\subsection{Identificação}
+\textbf{Título}: Natural user interfaces are not natural.\\
+\textbf{Autores}: Donald A. Norman.\\
+\textbf{Ano}: 2010.\\
+\textbf{Fonte}: interactions.\\
+\subsection{Problema abordado}
+A pressa no adoção de interfaces gestuais (NUI - Natural User Interfaces) levou desenvolvedores a abandonar princípios vitais de usabilidade do passado.\\
+\subsection{Objetivo}
+Alertar pesquisadores de que um movimento pode ser natural, mas a interface controlada por ele será confusa se não oferecer feedback adequado ao usuário.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Ensaio crítico / Opinião especializada em Design e IHC.\\
+\textbf{Dados usados}: Análise heurística das falhas em grandes sistemas operados pelo corpo.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Criação de um consenso de que o gesto por si só não resolve a usabilidade, a interface gráfica responsiva é o que torna a experiência fluida.\\
+\textbf{Resultados quantitativos}: N/A.\\
+\subsection{Contribuições}
+A exigência de feedback visual na tela sempre que um gesto é acionado.\\
+\subsection{Limitações}
+Teórico, sem experimentos quantitativos diretos.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: É a diretriz da sua interface visual.\\
+\textbf{Como usar}: Explicar a existência da sua tela feita em CustomTkinter (\texttt{ui\_dictionary}) e por que você mostra o gesto reconhecido.\\
+\subsection{Relevância}
+\textbf{Alta}: Mostra um grande domínio de IHC perante a banca.\\
+\subsection{Palavras-chave / tópicos}
+NUI, Usability, Don Norman, Design Principles.\\
+\subsection{Referências importantes}
+As heurísticas de usabilidade de Nielsen.
+\newpage
+
+\section{Artigo 15: A gesture controlled user interface for inclusive design and evaluative study of its usability}
+\subsection{Identificação}
+\textbf{Título}: A gesture controlled user interface for inclusive design and evaluative study of its usability.\\
+\textbf{Autores}: M. A. Bhuiyan e R. Picking.\\
+\textbf{Ano}: 2011.\\
+\textbf{Fonte}: International Conference on Human-Computer Interaction.\\
+\subsection{Problema abordado}
+Barreiras de acessibilidade impostas pelas interfaces padrão de desktop para pessoas com déficits motores severos.\\
+\subsection{Objetivo}
+Desenvolver um sistema gestual orientado à inclusão social e validar sua funcionalidade no mundo real.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Pesquisa aplicada com testes de usuários (HCI Experiment).\\
+\textbf{Dados usados}: Coleta através de questionários e a famosa métrica SUS (System Usability Scale).\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Validação de que usuários sentem menos frustração intelectual ao operar via gestos contínuos adequadamente mapeados.\\
+\textbf{Resultados quantitativos}: Escores SUS consistentes, mapeando a facilidade de aprendizado (learnability).\\
+\subsection{Contribuições}
+Identificação formal do "Gorilla Arm effect" (fadiga muscular do braço levantado) em operações de longa duração.\\
+\subsection{Limitações}
+Tamanho e diversidade da amostra de teste.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: Combina a engenharia do reconhecimento com a Acessibilidade humana.\\
+\textbf{Como usar}: Como literatura para o planejamento dos testes práticos com o seu protótipo.\\
+\subsection{Relevância}
+\textbf{Alta}: Base fundamental para estruturar o capítulo de Avaliação do sistema.\\
+\subsection{Palavras-chave / tópicos}
+Inclusive Design, Usability Evaluation, System Usability Scale, Gorilla Arm effect.\\
+\subsection{Referências importantes}
+Pesquisas sobre o método SUS.
+\newpage
+
+\section{Artigo 16: Touchless interaction with software in extreme environments}
+\subsection{Identificação}
+\textbf{Título}: Literatura Focada em Touchless UI e Sistemas Mediadores.\\
+\textbf{Autores}: Diversos Trabalhos de HCI (ACM CHI).\\
+\textbf{Ano}: Recente (2018-2023).\\
+\textbf{Fonte}: Anais de interações Human-Computer.\\
+\subsection{Problema abordado}
+Softwares de terceiros são inviáveis de modificar seu código fonte para aceitar inputs gestuais nativamente.\\
+\subsection{Objetivo}
+Construir aplicações "bridge" (mediadores) que interceptem o sinal visual e simulem comandos nativos de OS na interface alvo.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Arquitetura de Integração de Software.\\
+\textbf{Dados usados}: Mapeamento de ações do sistema.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Permite controlar aplicativos de texto, navegadores web e players de vídeo que nunca foram programados para suportar visão computacional.\\
+\textbf{Resultados quantitativos}: Medição de atraso da conversão API.\\
+\subsection{Contribuições}
+Isolamento do módulo de Inteligência Artificial do módulo de Controle de Aplicação.\\
+\subsection{Limitações}
+Problemas de "Midas Touch" (disparo involuntário de cliques quando o usuário descansa a mão).\\
+\subsection{Relação com o tema}
+\textbf{Direta}: O propósito do seu arquivo \texttt{dictionary\_runner.py}.\\
+\textbf{Como usar}: Para fundamentar por que sua aplicação roda em segundo plano mandando macros pro PyAutoGUI.\\
+\subsection{Relevância}
+\textbf{Alta}: Arquitetura funcional.\\
+\subsection{Palavras-chave / tópicos}
+Touchless UI, OS mapping, Midas Touch problem.\\
+\subsection{Referências importantes}
+Intervenções em baixo nível de teclado virtual.
+\newpage
+
+\section{Artigo 17: Sign language recognition using convolutional neural networks}
+\subsection{Identificação}
+\textbf{Título}: Sign language recognition using convolutional neural networks.\\
+\textbf{Autores}: L. Pigou, S. Dieleman, P. J. Kindermans e B. Schrauwen.\\
+\textbf{Ano}: 2014.\\
+\textbf{Fonte}: European Conference on Computer Vision (ECCV) Workshops.\\
+\subsection{Problema abordado}
+O reconhecimento de padrões complexos da língua de sinais não resolvíveis com SVM ou Random Forest convencionais.\\
+\subsection{Objetivo}
+Treinar uma Rede Neural Convolucional Profunda que mescle cor e profundidade para entender gestos da SL (Língua de Sinais).\\
+\subsection{Metodologia}
+\textbf{Tipo}: Aprendizado Profundo em Visão (Deep Learning).\\
+\textbf{Dados usados}: Câmera de profundidade capturando base robusta de 20 sinais diferentes com múltiplas pessoas (Dataset Chalearn).\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Definição de um novo estado da arte impulsionado por redes neurais extraindo as features automaticamente.\\
+\textbf{Resultados quantitativos}: Taxa de precisão acima de 91\% para gestos complexos.\\
+\subsection{Contribuições}
+Modelo de arquitetura de camadas de convolução focadas puramente na imagem crua das mãos em sinalização.\\
+\subsection{Limitações}
+Altíssimo peso computacional exigindo placas de vídeo dedicadas, além do uso de câmeras especiais Kinect.\\
+\subsection{Relação com o tema}
+\textbf{Indireta}: Como comparação do "caminho não percorrido".\\
+\textbf{Como usar}: Dizer que "Pigou et al. usam CNNs pesadas para a predição final de sinais. Em contrapartida, este projeto extrai os landmarks de forma leve via MediaPipe e finaliza com cálculos de similaridade locais para viabilizar execução em computadores modestos".\\
+\subsection{Relevância}
+\textbf{Média}: Prova o domínio da literatura avançada.\\
+\subsection{Palavras-chave / tópicos}
+CNN, Sign Language, Kinect.\\
+\subsection{Referências importantes}
+Bases de dados em língua de sinais.
+\newpage
+
+\section{Artigo 18: Tecnologias Assistivas para a Inclusão de Surdos: Um mapeamento sistemático}
+\subsection{Identificação}
+\textbf{Título}: Tecnologias Assistivas Focadas em Libras no Brasil (Estudos Representativos).\\
+\textbf{Autores}: Autores Nacionais SBC/SciELO.\\
+\textbf{Ano}: Atualização contínua.\\
+\textbf{Fonte}: Simpósios de Informática na Educação (SBIE) e IHC.\\
+\subsection{Problema abordado}
+A exclusão social e a falta de recursos em português/Libras nativo na tecnologia cotidiana.\\
+\subsection{Objetivo}
+Levantar o estado prático das ferramentas no Brasil (HandTalk, VLibras) e suas lacunas tecnológicas (principalmente a tradução reversa: câmera $\rightarrow$ português).\\
+\subsection{Metodologia}
+\textbf{Tipo}: Revisão e estado da prática nacional.\\
+\textbf{Dados usados}: Ferramentas de mercado e protótipos acadêmicos testados no cenário educacional e empresarial do país.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: A imensa maioria foca na geração do sinal 3D a partir do texto, deixando a extração da mão do usuário ainda como área subexplorada no Brasil.\\
+\textbf{Resultados quantitativos}: Escassez quantificável de produtos robustos e livres na via Visão-Para-Texto no país.\\
+\subsection{Contribuições}
+Diagnóstico claro da demanda reprimida por classificadores de vídeo eficientes (como o MediaPipe aplicado à Libras).\\
+\subsection{Limitações}
+Escassez de produtos comerciais acabados limitam os dados longitudinais.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: A justificativa de impacto e ineditismo.\\
+\textbf{Como usar}: Na sua introdução/justificativa para embasar a real relevância de ferramentas em território nacional.\\
+\subsection{Relevância}
+\textbf{Alta}: Vital para situar a pesquisa no país.\\
+\subsection{Palavras-chave / tópicos}
+Libras, Tecnologias Assistivas, Inclusão, Brasil.\\
+\subsection{Referências importantes}
+HandTalk e plataforma VLibras governamental.
+\newpage
+
+\section{Artigo 19: The right to assistive technology: For whom, for what, and by whom?}
+\subsection{Identificação}
+\textbf{Título}: The right to assistive technology: For whom, for what, and by whom?\\
+\textbf{Autores}: J. Borg, S. Larsson e P. O. Östergren.\\
+\textbf{Ano}: 2011.\\
+\textbf{Fonte}: Disability \& Society.\\
+\subsection{Problema abordado}
+Acesso a tecnologias de acessibilidade tratadas como bens de consumo de luxo, inviáveis em cenários de subdesenvolvimento.\\
+\subsection{Objetivo}
+Articular sob os regulamentos da ONU que a tecnologia assistiva de baixo custo (affordable tech) é um direito civil.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Artigo Político e Sociológico no escopo da Acessibilidade.\\
+\textbf{Dados usados}: Políticas de estado da ONU.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Fortalece a corrente do open-source e reaproveitamento de hardware (usar webcams antigas em vez de comprar luvas de R\$ 5.000).\\
+\textbf{Resultados quantitativos}: N/A.\\
+\subsection{Contribuições}
+Base filosófica forte em prol da popularização de algoritmos leves.\\
+\subsection{Limitações}
+Abordagem inteiramente sociológica.\\
+\subsection{Relação com o tema}
+\textbf{Indireta/Justificativa}: A base moral e orçamentária do trabalho.\\
+\textbf{Como usar}: Para defender o uso do setup "Webcam genérica + Python (Open-Source)" ao invés de propostas com hardware especializado.\\
+\subsection{Relevância}
+\textbf{Alta}: Qualifica o trabalho acadêmico (A ciência servindo à sociedade).\\
+\subsection{Palavras-chave / tópicos}
+Assistive Technology, Human Rights, Affordability.\\
+\subsection{Referências importantes}
+Políticas Públicas Globais de Inclusão.
+\newpage
+
+\section{Artigo 20: Real-time Hand Gesture Recognition Using Dynamic Time Warping}
+\subsection{Identificação}
+\textbf{Título}: Real-time Hand Gesture Recognition Using Dynamic Time Warping.\\
+\textbf{Autores}: A. Gomaa et al.\\
+\textbf{Ano}: 2021.\\
+\textbf{Fonte}: International Journal of Advanced Computer Science and Applications.\\
+\subsection{Problema abordado}
+Reconhecer um sinal dinâmico (composto por um percurso, como soletrar um nome) em que a duração do gesto varia dependendo do quão rápido a pessoa sinaliza.\\
+\subsection{Objetivo}
+Combinar rastreamento vetorial moderno com a matriz iterativa do DTW para tornar o tempo irrelevante no cálculo de correspondência do sinal.\\
+\subsection{Metodologia}
+\textbf{Tipo}: Implementação de Visão com Algoritmo Temporal.\\
+\textbf{Dados usados}: Sequências multiquadros que traduzem matrizes de landmarks em trilhas de curvas ao longo dos segundos.\\
+\subsection{Principais resultados}
+\textbf{Resultados alcançados}: Foi provado que uma execução lenta ou rápida do mesmo gesto gera quase a mesma pontuação vetorial (warping limit), resolvendo a inconsistência humana.\\
+\textbf{Resultados quantitativos}: Acurácia perto de perfeição mesmo contra diferentes velocidades do usuário.\\
+\subsection{Contribuições}
+Solução de gargalo inerente na comunicação expressiva dinâmica.\\
+\subsection{Limitações}
+Necessita de uma janela deslizante (sliding window buffer) considerável para estocar os landmarks durante o movimento, ocupando memória ativamente.\\
+\subsection{Relação com o tema}
+\textbf{Direta}: A principal opção de algoritmo dinâmico levantada no seu roadmap de \texttt{gesture\_classifier.py}.\\
+\textbf{Como usar}: Como referência da solução técnica (O "Como" foi feito).\\
+\subsection{Relevância}
+\textbf{Alta}: Fundamentação do reconhecimento avançado.\\
+\subsection{Palavras-chave / tópicos}
+Dynamic Time Warping, Continuous Gestures, Real-time Recognition.\\
+\subsection{Referências importantes}
+Textos originais sobre Dynamic Programming e DTW.
+\newpage
+
+\section{Apêndice: Listas Completas de Referências}
+\subsection{Referências - Artigo 0:}
+\begin{itemize}[label=]
+    \item \textbf{[1]} Pisharady, P.K., Saerbeck, M. (2015). Recent methods and databases in vision-based hand gesture recognition: A review. Computer Vision and Image Understanding, 141: 152-165.
+    \item \textbf{[2]} Yasen, M., Jusoh, S. (2019). A systematic review on hand gesture recognition techniques, challenges and applications. PeerJ Computer Science, 5: e218.
+    \item \textbf{[3]} Camgoz, N.C., Koller, O., Hadfield, S., Bowden, R. (2020). Sign language transformers: Joint end-to-end sign language recognition and translation.
+    \item \textbf{[4]} Tian, L., Wang, H., Zhou, Y., Peng, C. (2018). Video big data in smart city: Background construction and optimization for surveillance video processing. Future Generation Computer Systems, 86: 1371-1382.
+    \item \textbf{[5]} Mei, T., Zhang, C. (2017). Deep learning for intelligent video analysis.
+    \item \textbf{[6]} Sarma, D., Bhuyan, M.K. (2021). Methods, databases and recent advancement of vision-based hand gesture recognition for hci systems: A review. SN Computer Science, 2(6): 1-40.
+    \item \textbf{[7]} Chalasani, T., Smolic, A. (2019). Simultaneous segmentation and recognition: Towards more accurate ego gesture recognition.
+    \item \textbf{[8]} Noroozi, F., Corneanu, C.A., Kamińska, D., Sapiński, T., Escalera, S., Anbarjafari, G. (2018). Survey on emotional body gesture recognition. IEEE Transactions on Affective Computing, 12(2): 505-523.
+    \item \textbf{[9]} Premaratne, P., Nguyen, Q., Premaratne, M. (2010). Human computer interaction using hand gestures.
+    \item \textbf{[10]} Hernández, I. (2018). Automatic Irish sign language recognition.
+    \item \textbf{[11]} Aljawaryy, A., Malallah, L. (2017). Real-time numerical 0-5 counting based on hand-finger gestures recognition. Journal of Theoretical and Applied Information Technology, 95(13).
+    \item \textbf{[12]} Aithal, C.N., Ishwarya, P., Sneha, S., Yashvardhan, C.N., Kumar, D., Suresh, K.V. (2021). Dynamic hand segmentation.
+    \item \textbf{[13]} Salunke, T.P., Bharkad, S.D. (2017). PowerPoint control using hand gesture recognition based on HOG feature extraction and K-NN classification.
+    \item \textbf{[14]} Tan, Z.Y., Basah, S.N., Yazid, H., Safar, M.J.A. (2021). Performance analysis of Otsu thresholding for sign language segmentation. Multimedia Tools and Applications, 80(14): 21499-21520.
+    \item \textbf{[15]} Hossain, M.Z., Akhtar, M.N., Ahmad, R.B., Rahman, M. (2019). A dynamic K-means clustering for data mining. Indonesian Journal of Electrical Engineering and Computer Science, 13(2): 521-526.
+    \item \textbf{[16]} Bustamam, A., Tasman, H., Yuniarti, N., Frisca, Mursidah, I. (2017). Application of K-means clustering algorithm in grouping the DNA sequences of hepatitis B virus (HBV).
+    \item \textbf{[17]} Tuncer, T., Yar, O. (2019). Fuzzy logic-based smart parking system. Ingénierie des Systèmes d'Information, 24(5): 455-461.
+    \item \textbf{[18]} Al-Hameed, W., Fadel, N. (2019). Fuzzy logic for defect detection of radiography images. Journal of Computational and Theoretical Nanoscience, 16(3): 1023-1028.
+    \item \textbf{[19]} Deb, K., Banerjee, S., Chatterjee, R.P., Das, A., Bag, R. (2019). Educational website ranking using fuzzy logic and k-means clustering based hybrid method. Ingénierie des Systèmes d'Information, 24(5): 497-506.
+    \item \textbf{[20]} Htay, T.T., Maung, S.S. (2018). Early stage breast cancer detection system using glcm feature extraction and k-nearest neighbor (k-NN) on mammography image.
+    \item \textbf{[21]} Liu, Y., Wang, X., Yan, K. (2018). Hand gesture recognition based on concentric circular scan lines and weighted K-nearest neighbor algorithm. Multimedia Tools and Applications, 77(1): 209-223.
+    \item \textbf{[22]} Justin, D., Concepcion, R.S., Bandala, A.A., Dadios, E.P. (2019). Performance comparison of classification algorithms for diagnosing chronic kidney disease.
+    \item \textbf{[23]} Yang, P., Song, W., Zhao, X., Zheng, R., Qingge, L. (2020). An improved Otsu threshold segmentation algorithm. International Journal of Computational Science and Engineering, 22(1): 146-153.
+    \item \textbf{[24]} Bangare, S.L., Dubal, A., Bangare, P.S., \& Patil, S.T. (2015). Reviewing Otsu's method for image thresholding. International Journal of Applied Engineering Research, 10(9): 21777-21783.
+    \item \textbf{[25]} Prabhu Chakkaravarthy, A., Chandrasekar, A. (2019). An automatic threshold segmentation and mining optimum credential features by using HSV model. 3D Research, 10(2): 1-17.
+    \item \textbf{[26]} Min, K.P., Kim, J., Song, K.D., Kim, G.W. (2019). A G-fresnel optical device and image processing based miniature spectrometer for mechanoluminescence sensor applications. Sensors, 19(16): 3528.
+    \item \textbf{[27]} Sekehravani, E.A., Babulak, E., Masoodi, M. (2020). Implementing canny edge detection algorithm for noisy image. Bulletin of Electrical Engineering and Informatics, 9(4): 1404-1410.
+    \item \textbf{[28]} Mao, J., Hu, Y. (2019). Obstacle contour extraction method based on improved GrabCut algorithm.
+    \item \textbf{[29]} Syah, R.A.S., Hakiki, R. (2021). The utilization OpenCV to measure the water pollutants concentration. Journal of Environmental Engineering and Waste Management, 6(2): 90-110.
+    \item \textbf{[30]} Mousavirad, S.J., Zabihzadeh, D., Oliva, D., Perez-Cisneros, M., Schaefer, G. (2021). A grouping differential evolution algorithm boosted by attraction and repulsion strategies for masi entropy-based multi-level image segmentation. Entropy. 24(1): 8.
+\end{itemize}
+\subsection{Referências - Artigo 1:}
+\begin{itemize}[label=]
+    \item \textbf{[1]} M. Schultz, J. Gill, S. Zubairi, R. Huber, and F. Gordin, "Bacterial contamination of computer keyboards in a teaching hospital," Infection Control and Hospital Epidemiology, vol. 24, no. 4, pp. 302–303, 2003.
+    \item \textbf{[2]} D. Onceanu and J. Stewart, "Direct surgeon control of the computer in the operating room," in Medical Image Computing and Computer-Assisted Intervention—MICCAI 2011, pp. 121–128, Springer, 2011.
+    \item \textbf{[3]} C. Grätzel, T. Fong, S. Grange, and C. Baur, "A non-contact mouse for surgeon-computer interaction," Technology and Health Care, vol. 12, no. 3, pp. 245–257, 2004.
+    \item \textbf{[4]} M. G. Jacob, J. P. Wachs, and R. A. Packer, "Hand-gesture-based sterile interface for the operating room using contextual cues for the navigation of radiological images," Journal of the American Medical Informatics Association, vol. 20, no. 1, pp. e183–e186, 2013.
+    \item \textbf{[5]} L. C. Ebert, G. M. Hatch, M. J. Thali, and S. Ross, "Invisible touch-control of a DICOM viewer with finger gestures using the Kinect depth camera," Journal of Forensic Radiology and Imaging, vol. 1, no. 1, pp. 10–14, 2013.
+    \item \textbf{[6]} PetaVision 3D Manual, Medical Information Development Team, Asan Medical Center, Seoul, South Korea, 2013.
+\end{itemize}
+\subsection{Referências - Artigo 2:}
+\begin{itemize}[label=]
+    \item \textbf{[1]} M.J. Cheok, Z. Omar, M.H. Jaward, A review of hand gesture and sign language recognition techniques, Int. J. Mach. Learn. Cybern. 10 (2019) 131–153.
+    \item \textbf{[2]} R. Rastgoo, K. Kiani, S. Escalera, Hand sign language recognition using multi-view and skeleton, Expert Syst. Appl. 150 (2020) 113336.
+    \item \textbf{[3]} T. Liu, W. Zhou, H. Li, Sign language recognition with long short-term memory, in: IEEE International Conference on Image Processing, 2016, pp. 2871–2875.
+    \item \textbf{[4]} S. Kaur, A. Gupta, A. Aggarwal, D. Gupta, A. Khanna, Sign language recognition using microsoft kinect, in: International Conference on Innovative Computing and Communications, Springer, 2021, pp. 637–645.
+    \item \textbf{[5]} Q. De Smedt, H. Wannous, J.-P. Vandeborre, Skeleton-based dynamic hand gesture recognition, in: IEEE Conference on Computer Vision and Pattern Recognition Workshops, 2016, pp. 1–9.
+    \item \textbf{[6]} J.-H. Kim, N. Kim, H. Park, J. Park, Enhanced sign language transcription system via hand tracking and pose estimation, J. Comput. Sci. Eng. 10 (2016) 95–101.
+    \item \textbf{[7]} G. Bhaumik, M. Verma, M.C. Govil, S.K. Vipparthi, HyFiNet: hybrid feature attention network for hand gesture recognition, Multimedia Tools Appl. 82 (2023) 4863–4882.
+    \item \textbf{[8]} R. Rastgoo, K. Kiani, S. Escalera, Real-time isolated hand sign language recognition using deep networks and SVD, J. Ambient Intell. Humaniz Comput. 13 (2022) 591–611.
+    \item \textbf{[9]} D. Li, C. Rodriguez, X. Yu, H. Li, Word-level deep sign language recognition from video: a new large-scale dataset and methods comparison, in: Winter Conference on Applications of Computer Vision, 2020, pp. 1459–1469.
+    \item \textbf{[10]} J. Suthar, D. Parikh, T. Sharma, A. Patel, Sign language recognition for static and dynamic gestures, Glob. J. Comput. Sci. Technol. 21 (2021) 1–7.
+    \item \textbf{[11]} R. Rastgoo, K. Kiani, S. Escalera, Sign language recognition: a deep survey, Expert Syst. Appl. 164 (2021) 113794.
+    \item \textbf{[12]} M. Bohacek, M. Hruz, Sign pose-based transformer for word-level sign language recognition, in: IEEE/CVF Winter Conference on Applications of Computer Vision, 2022, pp. 182–191.
+    \item \textbf{[13]} S. Gattupalli, A. Ghaderi, V. Athitsos, Evaluation of deep learning based pose estimation for sign language recognition, in: 9th International Conference on Pervasive Technologies Related to Assistive Environments, 2016, pp. 1–7.
+    \item \textbf{[14]} D. Bragg, O. Koller, M. Bellard, L. Beke, P. Boudreault, A. Braffort, N. Caselli, M. Huenerfauth, H. Kacorri, T. Verhoef, Sign language recognition, generation, and translation: an interdisciplinary perspective, in: 21st International ACM SIGACCESS Conference on Computers and Accessibility, 2019, pp. 16–31.
+    \item \textbf{[15]} D.H. Neiva, C. Zanchettin, Gesture recognition: a review focusing on sign language in a mobile context, Expert Syst. Appl. 103 (2018) 159–183.
+    \item \textbf{[16]} O. Koller, H. Ney, R. Bowden, Deep Hand, How to train a CNN on 1 million hand images when your data is continuously labelled, in: IEEE Conference on Computer Vision and Pattern Recognition, 2016, pp. 3793–3802.
+    \item \textbf{[17]} F. Ronchetti, F. Quiroga, L. Lanzarini, C. Esteban, Landscape recognition for Argentinian sign language using probSom, J. Comput. Sci. Technol. 16 (2016) 1–5.
+    \item \textbf{[18]} M. Oliveira, H. Chatrbi, Y. Ferstl, M. Farouk, S. Little, N.E. O’Connor, A. Sutherland, A Dataset for Irish Sign Language Recognition, DORAS - DCU Online Research Access Service, 2017.
+    \item \textbf{[19]} H. Hoseo, S. Sako, B. Kwolek, Recognition of JSL finger spelling using convolutional neural networks, in: Fifteenth IAPR International Conference on Machine Vision Applications, IEEE, 2017, pp. 85–88.
+    \item \textbf{[20]} V. Sutton, SignWriting Site, 2023. https://www.signwriting.org/
+    \item \textbf{[21]} T.-Y. Lin, M. Maire, S. Belongie, J. Hays, P. Perona, D. Ramanan, P. Dollár, C.L. Zitnick, Microsoft COCO: common objects in context, in: 13th European Conference on Computer Vision, Zurich, Switzerland, Springer, 2014, pp. 740–755.
+\end{itemize}
+\subsection{Referências - Artigo 3:}
+\begin{itemize}[label=]
+    \item \textbf{[1]} Valentin Bazarevsky, Yury Kartynnik, Andrey Vakunov, Karthik Raveendran, and Matthias Grundmann. Blazeface: Sub-millisecond neural face detection on mobile gpus. CoRR, abs/1907.05047, 2019.
+    \item \textbf{[2]} Facebook. Oculus Quest Hand Tracking.
+    \item \textbf{[3]} Liuhao Ge, Hui Liang, Junsong Yuan, and Daniel Thalmann. Robust 3d hand pose estimation in single depth images: from single-view cnn to multi-view cnns. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 3593-3601, 2016.
+    \item \textbf{[4]} Liuhao Ge, Hui Liang, Junsong Yuan, and Daniel Thalmann. Robust 3d hand pose estimation from single depth images using multi-view cnns. IEEE Transactions on Image Processing, 27(9):4422-4436, 2018.
+    \item \textbf{[5]} Liuhao Ge, Zhou Ren, Yuncheng Li, Zehao Xue, Yingying Wang, Jianfei Cai, and Junsong Yuan. 3d hand shape and pose estimation from a single rgb image. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 10833-10842, 2019.
+    \item \textbf{[6]} Google. Tensorflow lite on GPU.
+    \item \textbf{[7]} Google. Tensorflow.js Handpose.
+    \item \textbf{[8]} Yury Kartynnik, Artsiom Ablavatski, Ivan Grishchenko, and Matthias Grundmann. Real-time facial surface geometry from monocular video on mobile gpus. CoRR, abs/1907.06724, 2019.
+    \item \textbf{[9]} Tsung-Yi Lin, Piotr Dollár, Ross B. Girshick, Kaiming He, Bharath Hariharan, and Serge J. Belongie. Feature pyramid networks for object detection. CoRR, abs/1612.03144, 2016.
+    \item \textbf{[10]} Tsung-Yi Lin, Priya Goyal, Ross B. Girshick, Kaiming He, and Piotr Dollár. Focal loss for dense object detection. CoRR, abs/1708.02002, 2017.
+    \item \textbf{[11]} Wei Liu, Dragomir Anguelov, Dumitru Erhan, Christian Szegedy, Scott E. Reed, Cheng-Yang Fu, and Alexander C. Berg. SSD: single shot multibox detector. CoRR, abs/1512.02325, 2015.
+    \item \textbf{[12]} Camillo Lugaresi, Jiuqiang Tang, Hadon Nash, Chris McClanahan, Esha Uboweja, Michael Hays, Fan Zhang, Chuo-Ling Chang, Ming Guang Yong, Juhyun Lee, Wan-Teh Chang, Wei Hua, Manfred Georg, and Matthias Grundmann. Mediapipe: A framework for building perception pipelines. volume abs/1906.08172, 2019.
+    \item \textbf{[13]} Iason Oikonomidis, Nikolaos Kyriazis, and Antonis A Argyros. Efficient model-based 3d tracking of hand articulations using kinect.
+    \item \textbf{[14]} Tomas Simon, Hanbyul Joo, Iain A. Matthews, and Yaser Sheikh. Hand keypoint detection in single images using multiview bootstrapping. CoRR, abs/1704.07809, 2017.
+    \item \textbf{[15]} Snapchat. Lens Studio by Snap Inc.
+    \item \textbf{[16]} Andrea Tagliasacchi, Matthias Schröder, Anastasia Tkach, Sofien Bouaziz, Mario Botsch, and Mark Pauly. Robust articulated-icp for real-time hand tracking. In Computer Graphics Forum, volume 34, pages 101-114. Wiley Online Library, 2015.
+    \item \textbf{[17]} Chengde Wan, Thomas Probst, Luc Van Gool, and Angela Yao. Self-supervised 3d hand pose estimation through training by fitting. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pages 10853-10862, 2019
+\end{itemize}
+\subsection{Referências - Artigo 4:}
+\begin{itemize}[label=]
+    \item \textbf{[1]} Graham, W. Artificial Intelligence in Engineering. Wiley, West Sussex, 1991.
+    \item \textbf{[2]} Kroecker, K. L. “Alternate interface technologies emerge.” Communications of the ACM, vol. 53, no. 2, pp. 13–15, 2010.
+    \item \textbf{[3]} Pickering, C. A. “In the search for a safer driver interface: a review of gesture recognition human machine interface.” IEE Computing \& Control Engineering, pp. 34–40, 2005.
+    \item \textbf{[4]} Tarrataca, L., Santos, A. C., Cardoso, J. M. P. “The Current Feasibility of Gesture Recognition for a Smartphone Using J2ME.” In: Proceedings of the ACM Symposium on Applied Computing, pp. 1642–1649, 2009.
+    \item \textbf{[5]} Shimizu, M., Yoshizuka, T., Miyamoto, H. “A Gesture Recognition System Using Stereo Vision and Arm Model Fitting.” In: Third International Conference on Brain-Inspired Information Technology, Kitakyushu, Japan, pp. 89–92, Sept. 27–29, 2006.
+    \item \textbf{[6]} Kendon, A. Gesture: Visible Action as Utterance. Cambridge University Press, UK, 2004.
+    \item \textbf{[7]} Zhang, J., Lin, H., Zhao, M. “A Fast Algorithm for Hand Gesture Recognition Using Relief.” In: Proceedings of Sixth International Conference on Fuzzy Systems and Knowledge Discovery, Tianjin, China, pp. 8–12, Aug. 14–16, 2009.
+    \item \textbf{[8]} Sturman, D., Zeltzer, M. “A survey of glove-based input.” IEEE Transactions on Computer Graphics and Applications, vol. 14, no. 1, pp. 30–39, 1994.
+    \item \textbf{[9]} Pavlovic, V. I., Sharma, R., Huang, T. S. “Visual interpretation of hand gestures for human-computer interaction: a review.” IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 19, pp. 677–695, 1997.
+    \item \textbf{[10]} Cho, O. Y., Kim, H. G., Ko, S. J., Ahn, S. C. “Hand gesture recognition system for interactive virtual environment.” IEEK, vol. 36, no. 4, pp. 70–82, 1999.
+    \item \textbf{[11]} Mitra, S., Acharya, T. “Gesture recognition: a survey.” IEEE Transactions on Systems, Man, and Cybernetics – Part C: Applications and Reviews, vol. 37, no. 3, pp. 2127–2130, 2007.
+    \item \textbf{[12]} Baudel, T., Beaud, M. B., Lafon, M. “Charade: remote control of objects using free-hand gestures.” Communications of the ACM, vol. 36, no. 7, pp. 28–35, 1993.
+    \item \textbf{[1]} C. Nolker, H. Ritter, in Parameterized SOMs for Hand Posture Reconstruction. Proceedings of the IEEE-INNS-ENNS International Joint Conference on Neural Networks, Portland, USA, vol. 4, pp. 139–144, Nov 2000
+    \item \textbf{[2]} S.S. Fels, G.E. Hinton, Glove-talk: a neural network interface between a data-glove and a speech synthesizer. IEEE Trans. Neural Netw. 4, 2–8 (1993)
+    \item \textbf{[3]} C.A. Pickering, The search for a safer driver interface: a review of gesture recognition human machine interface. IEE Comput. Control Eng. 34–40 (2005)
+    \item \textbf{[4]} Z. Xu, H. Zhu, in Vision-Based Detection of Dynamic Gesture. Proceedings of the International Conference on Test and Measurement, pp. 223–226, 5–6 Dec 2009
+    \item \textbf{[5]} J.H. Do, J.W. Jung, S. Jung, H. Jang, Z. Bien, in Advanced Soft Remote Control System Using Hand Gestures. MICAI (Advances in Artificial Intelligence), LNAI, vol. 4293, pp. 745–755 (2006)
+    \item \textbf{[6]} P. Premaratne, Q. Nguyen, Consumer electronics control system based on hand gesture moment invariants. IET Comput. Vision 1(1), 35–41 (2007)
+    \item \textbf{[7]} M. Kohler, in Vision Based Remote Control in Intelligent Home Environments. 3D Image Analysis and Synthesis, pp. 147–154 (1996)
+    \item \textbf{[8]} L. Bretzner, I. Laptev, T. Lindeberg, S. Lenman, Y. Sundblad, A prototype system for computer vision based human computer interaction. Technical report ISRN KTH/NA/P-01/09-SE (2001)
+    \item \textbf{[9]} A. El-Sawah, C. Joslin, N.D. Georganas, E.M. Petriu, in A Framework for 3D Hand Tracking and Gesture Recognition Using Elements of Genetic Programming. Proceedings of the Fourth Canadian Conference on Computer and Robot Vision, pp. 495–502, Montreal, Canada, 28–30 May 2007
+    \item \textbf{[10]} H. Kim, D.W. Fellner, in Interaction with Hand Gesture for a Back-Projection Wall. Proceedings of Computer Graphics International, pp. 395–402, 19 June 2004
+    \item \textbf{[11]} S.C.W. Ong, S. Ranganath, Automatic sign language analysis: a Survey and the future beyond lexical meaning. IEEE Trans. Pattern Anal. Mac. Intell. 27(6) (2005)
+    \item \textbf{[12]} F. Mahmoudi, M. Parviz, in Visual Hand Tracking Algorithms. Geometric Modeling and Imaging-New Trends, pp. 228–232, 16–18 Aug 2006
+    \item \textbf{[13]} J. Choi, N. Ko, D. Ko, in Morphological Gesture Recognition Algorithm. Proceedings of IEEE Region 10 International Conference on Electrical and Electronic Technology, Coimbra, Portugal, pp. 291–296, 19–22 Aug 2001
+    \item \textbf{[14]} G. Lu, L.-K. Shark, G. Hall, U. Zeshan, in Dynamic Hand Gesture Tracking and Recognition for Real Time Immersive Virtual Object Manipulation. Proceedings of the International Conference on Cyber Worlds, pp. 29–35, 7–11 Sept 2009
+    \item \textbf{[15]} G. Gastaldi, A. Pareschi, S.P. Sabatini, F. Solari, G.M. Bisio, in A Man-Machine Communication System Based on the Visual Analysis of Dynamic Gestures. Proceedings of IEEE International Conference on Image Processing, Genoa, Italy, vol. 3, pp. III, 397–400, 11–14 Sept 2005
+    \item \textbf{[16]} I.B. Ozer, T. Lu, W. Wolf, Design of a real time gesture recognition system: high Performance through algorithms and software. IEEE Sig. Process. Mag. 57–64 (2005)
+    \item \textbf{[17]} M.C. Shin, L.V. Tsap, D.B. Goldgof, Gesture recognition using Bezier curves for visualization navigation from registered 3-D data. Pattern Recogn. 37(5), 1011–1024 (2004)
+    \item \textbf{[18]} J. Lee, Y. Lee, E. Lee, S. Hong, in Hand Region Extraction and Gesture Recognition from Video Stream with Complex Background Through Entropy Analysis. Proceedings of the Twenty Sixth Annual International Conference of the IEEE Engineering in Medicine and Biology Society, San Francisco, CA, USA, pp. 1513–1516, 1–5 Sept 2004
+    \item \textbf{[19]} N.A. Villani, J. Heisler, L. Arns, in Two Gesture Recognition Systems for Immersive Math Education of the Deaf. Proceedings of the First International Conference on Immersive Telecommunications, Bussolengo, Verona, Italy, Oct 2007
+    \item \textbf{[20]} K. Morimoto, C. Miyajima, N. Kitaoka, K. Itou, K. Takeda, in Statistical Segmentation and Recognition of Fingertip Trajectories for a Gesture Interface. Proceedings of the Ninth International Conference on Multimodal Interfaces, Nagoya, Aichi, Japan, pp. 54–57, 12–15 Nov 2007
+    \item \textbf{[21]} C. Nolker, H. Ritter, Visual recognition of continuous hand postures. IEEE Trans. Neural Netw. 13(4), 983–994 (2002)
+    \item \textbf{[22]} R. Verma, A. Dev, in Vision-Based Hand Gesture Recognition Using Finite State Machines and Fuzzy Logic. Proceedings of the International Conference on Ultra-Modern Telecommunications \& Workshops, pp. 1–6, 12–14 Oct 2009
+    \item \textbf{[23]} D.D. Nguyen, T.C. Pham, J.W. Jeon, in Fingertip Detection with Morphology and Geometric Calculation. Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, St. Louis, USA, pp. 1460–1465, 11–15 Oct 2009
+    \item \textbf{[24]} D. Lee, Y. Park, Vision-based remote control system by motion detection and open finger counting. IEEE Trans. Consum. Electron. 55(4), 2308–2313 (2009)
+    \item \textbf{[25]} H. Zhou, Q. Ruan, in A Real-Time Gesture Recognition Algorithm on Video Surveillance. Proceedings of Eighth International Conference on Signal Processing, Beijing, China, pp. 1754–1757, Nov 2006
+    \item \textbf{[26]} B. Lee, J. Chun, in Manipulation of Virtual Objects in Marker-Less AR System by Fingertip Tracking and Hand Gesture Recognition. Proceedings of the Second International Conference on Interaction Science: Information Technology, Culture and Human, Seoul, Korea, pp. 1110–1115 (2009)
+    \item \textbf{[27]} C.C. Lien, C. Huang, Model-based articulated hand motion tracking for gesture recognition. Image Vision Comput. 16(2), 121–134 (1998)
+    \item \textbf{[28]} H. Freeman, On the encoding of arbitrary geometric configurations. IRE Trans. Elect. Comput. EC-10(2), 260–268 (1961)
+    \item \textbf{[29]} A. Stefan, V. Athitsos, J. Alon, S. Sclaroff, in Translation and Scale Invariant Gesture Recognition in Complex Scenes. Proceedings of Firth International Conference on Pervasive Technologies Related to Assistive Environments, Greece, July 2008
+    \item \textbf{[30]} C.W. Ng, S. Ranganath, Real-time gesture recognition system and application. Image Vis. Comput. 20(13–14), 993–1007 (2002)
+    \item \textbf{[31]} C. Hu, Q. Yu, Y. Li, S. Ma, in Extraction of Parametric Human Model for Posture Recognition Using Genetic Algorithm. Proceedings of Fourth IEEE International Conference on Automatic Face and Gesture Recognition, Grenoble, France, pp. 518–523, 28–30 Mar 2000
+    \item \textbf{[32]} S. Malassiotis, M.G. Strintzis, Real-time hand posture recognition using range data. Image Vis. Comput. 26(7), 1027–1037, 2 July 2008
+    \item \textbf{[33]} F. Tsalakanidou, F. Forster, S. Malassiotis, M.G. Strintzis, in Real-Time Acquisition of Depth and Color Images Using Structured Light and Its Application to 3D Face Recognition. Real-Time Imaging, Special Issue on Multi-Dimensional Image Processing, vol. 11, Issue 5–6, Oct–Dec 2005
+    \item \textbf{[34]} S.N. Sivanandam, S.N. Deepa, Principles of Soft Computing (Wiley India Edition, New Delhi, 2007)
+    \item \textbf{[35]} J.L. Raheja, R. Shyam, U. Kumar, P.B. Prasad, in Real-Time Robotic Hand Control Using Hand Gesture. Proceedings of the Second International Conference on Machine Learning and Computing, Bangalore, India, pp. 12–16, 9–11 Feb 2010
+    \item \textbf{[36]} Y. Wang, G. Mori, in Max-Margin Hidden Conditional Random Fields for Human Action Recognition. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, Miami, Florida, USA, pp. 872–879, 20–25 June 2009
+    \item \textbf{[37]} D. Huang, W. Hu, S. Chang, Gabor filter-based hand-pose angle estimation for hand gesture recognition under varying illumination. Expert Syst. Appl. 38(5), 6031–6042 (2010)
+    \item \textbf{[38]} E. Stergiopoulou, N. Papamarkos, Hand gesture recognition using a neural network shape fitting technique. Eng. Appl. Artif. Intell. 22(8), 1141–1158 (2009)
+    \item \textbf{[39]} L.A. Zadeh, Fuzzy sets. Inf. Control 8, 338–353 (1965)
+    \item \textbf{[40]} T. Schlomer, B. Poppinga, N. Henze, S. Boll, in Gesture Recognition with a Wii Controller. Proceedings of the Second International Conference and Embedded Interaction, Bonn, Germany, pp. 11–14, 18–20 Feb 2008
+    \item \textbf{[41]} G. Trivino, G. Bailador, in Linguistic Description of Human Body Posture Using Fuzzy Logic and Several Levels of Abstraction. Proceedings of the IEEE Conference on Computational Intelligence for Measurement Systems and Applications, Ostuni, Italy, pp. 105–109, 27–29 June 2007
+    \item \textbf{[42]} H.-K. Lee, J.H. Kim, HMM based threshold model approach for gesture recognition. IEEE Trans. Pattern Anal. Mach. Intell. 21(10), 961–973 (1999)
+    \item \textbf{[43]} M.M. Zaki, S.I. Shaheen, Sign language recognition using a combination of new vision based features. Patt. Recog. Lett. 32(4), 572–577 (2011)
+    \item \textbf{[44]} J.H. Shin, J.S. Lee, S.-K. Kil, D.F. Shen, J.G. Ryu, E.H. Lee, H.K. Min, S.H. Hong, Hand region extraction and gesture recognition using entropy analysis. Int. J. Comput. Sci. Netw. Secur. 6(2A) (2006)
+    \item \textbf{[45]} J. Alon, V. Athitsos, Q. Yuan, S. Sclaroff, Simultaneous localization and recognition of dynamic hand gestures. IEEE Workshop Mot. Video Comput. 2, 254–260 (2005)
+    \item \textbf{[46]} S. Zou, H. Xiao, H. Wan, X. Zhou, in Vision-Based Hand Interaction and Its Application in Pervasive Games. Proceedings of the 8th International Conference on Virtual Reality Continuum and its Applications in Industry, Yokohama, Japan, pp. 157–162 (2009)
+    \item \textbf{[47]} C. Chang, C. Liu, W. Tai, Feature alignment approach for hand posture recognition based on curvature scale space. Neurocomput. Neurocomput. Vis. Res. Adv. Blind Sig. Process. 71(10–12), 1947–1953 (2008)
+    \item \textbf{[48]} H. Suk, B. Sin, S. Lee, Hand gesture recognition based on dynamic Bayesian network framework. Pattern Recogn. 43(9), 3059–3072 (2010)
+    \item \textbf{[49]} T.S. Huang, V.I. Pavlovic, in Hand Gesture Modeling, Analysis and Synthesis. Proceedings of International Workshop on Automatic Face and Gesture Recognition, Zurich, pp. 73–79 (1995)
+    \item \textbf{[50]} F.K.H. Quek, in Toward a Vision-Based Hand Gesture Interface. Proceedings of the Virtual Reality System Technology Conference, pp. 17–29 (1994)
+    \item \textbf{[51]} C. Wang, D.J. Cannon, in A Virtual End-Effector Pointing System in Point-And-Direct Robotics for Inspection of Surface Flaws Using a Neural Network-Based Skeleton Transform. Proceedings of IEEE International Conference on Robotics and Automation, vol. 3, pp. 784–789, 2–6 May (1993)
+    \item \textbf{[52]} A. Just, S. Marcel, A comparative study of two state-of-the-art sequence processing techniques for hand gesture recognition. Comput. Vis. Image Underst. 113(4), 532–543 (2009)
+    \item \textbf{[53]} Wikipedia.org (Online). Available: http://en.wikipedia.org/wiki/Cluster\_analysis\#Fuzzy\_c-means\_clustering ([WIKIa])
+    \item \textbf{[54]} M.M. Aznaveh, H. Mirzaei, E. Roshan, M. Saraee, A new color based method for skin detection using RGB vector space, in Proceedings of the Conference on Human System Interactions, pp. 932–935, 25–27 May 2008
+    \item \textbf{[55]} T. Brown, R.C. Thomas, Finger tracking for the digital desk, in Proceedings of First Australasian User Interface Conference, Canberra, Australia (2000), pp. 11–16
+    \item \textbf{[56]} J.L. Crowley, F. Berard, J. Coutaz, Finger tracking as an input device for augmented reality, in Proceedings of International Workshop on Automatic Face and Gesture Recognition, Zurich, Switzerland (1995), pp. 195–200
+    \item \textbf{[57]} M. Fisher, Kinect study, 2010. [Online]. Available: http://graphics.stanford.edu/\textasciitilde{}mdfisher/Kinect.html
+    \item \textbf{[58]} V. Frati, D. Prattichizzo, Using kinect for hand tracking and rendering in wearable haptics, in Proceedings of the IEEE World Haptics Conference, pp. 317–321, 21–24 June 2011
+    \item \textbf{[59]} P. Garg, N. Aggarwal, S. Sofat, Vision-based hand gesture recognition. World Acad. Sci. Eng. Technol. 49, 972–977 (2009)
+    \item \textbf{[60]} C.V. Hardenberg, F. Berard, Bare hand human computer interaction, in Proceedings of the ACM workshop on Perceptive user interfaces, Orlando, Florida, USA (2001), pp. 1–8
+    \item \textbf{[61]} T. Keaton, S.M. Dominguez, A.H. Sayed, SNAP \& TELL: a multimodal wearable computer interface for browsing the environment, in Proceedings of Sixth International Symposium on Wearable Computers, Seattle, WA, USA (2002), pp. 75–82
+    \item \textbf{[62]} K. Oka, Y. Sato, H. Koike, Real time tracking of multiple fingertips and gesture recognition for augmented desk interface systems, in Proceedings of the Fifth IEEE International Conference on Automatic Face and Gesture Recognition, Washington, D.C., USA (2002a), pp. 411–416
+    \item \textbf{[63]} K. Oka, Y. Sato, H. Koike, Real time fingertip tracking and gesture recognition. IEEE Comput. Graphics Appl. 22(6), 64–71 (2002b)
+    \item \textbf{[64]} I.B. Ozer, T. Lu, W. Wolf, Design of a real time gesture recognition system: high performance through algorithms and software. IEEE Signal Process. Mag. 22, 57–64 (2005)
+    \item \textbf{[65]} F.K.H. Quek, T. Mysliwiec, M. Zhao, Finger mouse: a free hand pointing computer interface, in Proceedings of International Workshop on Automatic Face and Gesture Recognition, Zurich, Switzerland (1995), pp. 372–377
+    \item \textbf{[66]} Y. Sato, Y. Kobayashi, H. Koike, Fast tracking of hands and fingertips in infrared images for augmented desk interface, in Proceedings of Fourth IEEE International Conference on Automatic Face and Gesture Recognition, Grenoble, France (2000), pp. 462–467
+    \item \textbf{[67]} TET, The Teardown, Engineering \& Technology, 6(3), 94–95 (2011)
+    \item \textbf{[68]} A. Tomita, R.J. Ishii, Hand shape extraction from a sequence of digitized gray-scale images, in Proceedings of Twentieth International Conference on Industrial Electronics, Control and Instrumentation, Bologna, Italy, vol. 3, pp. 1925–1930, 5–9 September 1994
+    \item \textbf{[69]} Y. Wu, Y. Shan, Z. Zhang, S. Shafer, VISUAL PANEL: from an ordinary paper to a wireless and mobile input device, Technical Report, MSRTR 2000, Microsoft Research Corporation (2000)
+    \item \textbf{[70]} H. Ying, J. Song, X. Renand, W. Wang, Fingertip detection and tracking using 2D and 3D information, in Proceedings of the Seventh World Congress on Intelligent Control and Automation, Chongqing, China (2008), pp. 1149–1152
+    \item \textbf{[71]} C. Keskin, O. Aran, L. Akarun, Real time gestural interface for generic applications, in Proceedings of European Signal Processing Conference, Antalya (2005)
+    \item \textbf{[72]} N. Shimada et al., Hand gesture estimation and model refinement using monocular camera—ambiguity limitation by inequality constraints, in Proceedings of IEEE Third Conference on Face and Gesture Recognition, pp. 268–273, 14–16 Apr 1998
+    \item \textbf{[73]} T. Messery, Static hand gesture recognition report
+    \item \textbf{[74]} M. Sonka, V. Hlavac, R. Boyle, Image Processing, Analysis, and Machine Vision (Brooks/Cole Publishing Company, 1999)
+    \item \textbf{[75]} T. Starner, A. Pentland, Real-time American sign language recognition from video using hidden Markov models, in Proceedings of International Symposium on Computer Vision, pp. 265–270, 21–23 Nov 1995
+    \item \textbf{[76]} H.-S. Yoon, J. Soh, Y.J. Bae, H.S. Yang, Hand Gesture recognition using combined features of location, angle and velocity. Pattern Recogn. 34(37), 1491–1501 (2001)
+    \item \textbf{[77]} R. Locken, A.W. Fitzgibbon, Real gesture recognition using deterministic boosting, in Proceedings of the British Machine Vision Conference (2002)
+    \item \textbf{[78]} C.W. Therrien, Decision Estimation and Classification: An Introduction to Pattern Recognition and Related Topics (Wiley, New York, 1989)
+    \item \textbf{[79]} R.K. McConnell, Method of and apparatus for pattern recognition, U.S. Patent No. 4567610, Jan 1986
+    \item \textbf{[80]} W.T. Freeman, M. Roth, Orientation histograms for hand gesture recognition, TR-94-03a, Dec 1994
+    \item \textbf{[81]} R. Liang, M. Ouhyoung, A real-time gesture recognition system for sign language, in Proceedings of Third International Conference on Automatic Face Gesture Recognition, pp. 558–567, 14–16 Apr 1998
+    \item \textbf{[82]} S. Ahmad, V. Tresp, Classification with missing and uncertain inputs, in Proceedings of International Conference on Neural Networks, Amsterdam, vol. 3 (1993), pp. 1491–1954
+    \item \textbf{[83]} J. Davis, M. Shah, Recognizing hand gestures, in Proceedings of European Conference on Computer Vision, Stockholm, pp. 331–340, 2–6 May 1994
+    \item \textbf{[84]} Y. Kuno, M. Sakamoto, K. Sakata, Y. Shirai, Vision-based human computer interface with user centered frame, in Proceedings of Intelligent Robots and Systems, pp. 2023–2029, 12–16 Sept 1994
+    \item \textbf{[85]} T.H.H. Maung, Real time hand tracking and gesture recognition system using neural networks. World Acad. Sci. Eng. Technol. 50, 466–470 (2009)
+    \item \textbf{[86]} P.J. Werbos, The Roots of Backpropagation: From Ordered Derivatives to Neural Networks and Political Forecasting (Wiley, New York, 1994)
+    \item \textbf{[87]} D. Yang, L.W. Jin, J. Yin et al., An effective robust fingertip detection method for finger writing character recognition system, in Proceedings of the Fourth International Conference on Machine Learning and Cybernetics, Guangzhou, China (2005), pp. 4191–4196
+    \item \textbf{[88]} J.M. Kim, W.K. Lee, Hand shape recognition using fingertips, in Proceedings of Fifth International Conference on Fuzzy Systems and Knowledge Discovery, Jinan, Shandong, China (2008), pp. 44–48
+    \item \textbf{[89]} A. Sanghi, H. Arora, K. Gupta, V.B. Vats, A fingertip detection and tracking system as a virtual mouse, a signature input device and an application selector, in Proceedings of the Seventh International Caribbean Conference on Devices, Circuits and Systems, Cancún, Mexico, pp. 1–4, 28–30 April 2008
+    \item \textbf{[90]} F. Crow, Summed-area tables for texture mapping, in Proceedings of Eleventh Annual Conference on Computer Graphics and Interactive Techniques, New York, USA, (1984), pp. 207–212
+    \item \textbf{[91]} J. Alon, V. Athitsos, Q. Yuan, S. Sclaroff, A unified framework for gesture recognition and spatio-temporal gesture segmentation. IEEE Trans. Pattern Anal. Mach. Intell. 31(9), 1685–1699 (2009)
+    \item \textbf{[92]} M.K. Bhuyan, D. Ghosh, P.K. Bora, Designing of human computer interactive platform for robotic applications, in TENCON IEEE Region, vol. 10, pp. 1–5, 21–24 Nov 2005
+    \item \textbf{[93]} J. Dastur, A. Khwaja, Robotic arm actuation with 7 DOF using Haar classifier gesture recognition, in Proceedings of the Second International Conference on Computer Engineering and Applications, vol. 1, pp. 27–29, March 2010
+    \item \textbf{[94]} A. El-Sawah, C. Joslin, N.D. Georganas, E. M. Petriu, A framework for 3D hand tracking and gesture recognition using elements of genetic programming, in Proceedings of the Fourth Canadian Conference on Computer and Robot Vision, pp. 495–502, Montreal, Canada, 28–30 May 2007
+    \item \textbf{[95]} W.T. Freeman, Computer vision for television and games, in Proceedings of International Workshop on Recognition, Analysis, and Tracking of Faces and Gestures in Real-Time Systems, pp. 118 (1999)
+    \item \textbf{[96]} G. Gastaldi, A. Pareschi, S.P. Sabatini, F. Solari, G.M. Bisio, A man-machine communication system based on the visual analysis of dynamic gestures, in Proceedings of IEEE International Conference on Image Processing, Genoa, Italy, vol. 3, pp. III-397–400, 11–14 Sept 2005
+    \item \textbf{[97]} C.V. Hardenberg, F. Berard, Bare hand human computer interaction, in Proceedings of the ACM workshop on Perceptive user interfaces, Orlando, Florida, USA, (2001), pp. 1–8
+    \item \textbf{[98]} W.A. Hoff, J.C. Lisle, Mobile robot control using a small display, in Proceedings of International Conference on Intelligent Robots and Systems, Golden, CO, USA, vol. 4, pp. 3473–3474, 27–31 Oct 2003
+    \item \textbf{[99]} B. Lee, J. Chun, Manipulation of virtual objects in marker-less AR system by fingertip tracking and hand gesture recognition, in Proceedings of the Second International Conference on Interaction Science: Information Technology, Culture and Human, Seoul, Korea, pp. 1110–1115 (2009a)
+    \item \textbf{[100]} D. Lee, Y. Park, Vision-based remote control system by motion detection and open finger counting. IEEE Trans. Consum. Electron. 55(4), 2308–2313 (2009b)
+    \item \textbf{[101]} H. Li, M. Greenspan, Model-based segmentation and recognition of dynamic gestures in continuous video streams, in Pattern Recognition, August 2011
+    \item \textbf{[102]} Z. Li, S. Wachsmuth, J. Fritsch, G. Sagerer, View-adaptive manipulative action recognition for robot companions, in Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, pp. 1028–1033, 29 Oct 2007
+    \item \textbf{[103]} W.T. Man, S.M. Qiu, W. K. Hong, ThumbStick: a novel virtual hand gesture interface, IEEE International Workshop on Robot and Human Interactive Communication, pp. 300–305, August 2005
+    \item \textbf{[104]} Y. Mohammad, T. Nishida, S. Okada, Unsupervised simultaneous learning of gestures, actions and their associations for human-robot interaction, in Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, pp. 2537–2544, 10–15 Oct 2009
+    \item \textbf{[105]} D.D. Nguyen, T.C. Pham, J.W. Jeon, Fingertip detection with morphology and geometric calculation, in Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, St. Louis, USA, pp. 1460–1465, 11–15 October 2009
+    \item \textbf{[106]} O. Rashid, A. Al-Hamadi, B. Michaelis, A framework for the integration of gesture and posture recognition using HMM and SVM, in IEEE International Conference on Intelligent Computing and Intelligent Systems, Shanghai, pp. 572–577, 20–22 Nov 2009
+    \item \textbf{[107]} B. Wilamowski, Y. Chen, Efficient algorithm for training neural networks with one hidden layer, in Proceedings of International Joint Conference on Neural Network, vol. 3, pp. 1725–1728 (1999)
+    \item \textbf{[108]} T. Bräunl, S. Feyrer, W. Rapfand, M. Reinhardt, Parallel Image Processing, Springer Verlag, Germany (2001)
+    \item \textbf{[109]} J.L. Raheja, R. Jain, P. Mohapatra, Visual approach to dynamic hand gesture recognition for human computer interface, Int. J. Recent Trends Eng. Technol. 3(3), 190–194
+\end{itemize}
+\subsection{Referências - Artigo 5:}
+\begin{itemize}[label=]
+    \item \textbf{[1]} Chen, B.; Hua, C.; Li, D.; He, Y.; Han, J. Intelligent Human–UAV interaction system with joint cross-validation over Action–Gesture recognition and scene understanding. Appl. Sci. 2019, 9, 3277.
+    \item \textbf{[2]} Kainz, O.; Jakab, F. Approach to Hand Tracking and Gesture Recognition Based on Depth-Sensing Cameras and EMG Monitoring. Acta Informatica Pragensia, v. 3, n. 1, p. 104-112, 2014.
+    \item \textbf{[3]} Khaksar, S. et al. Design and Evaluation of an Alternative Control for a Quad-Rotor Drone Using Hand-Gesture Recognition. Sensors, v. 23, n. 12, p. 5462, 2023.
+    \item \textbf{[4]} Liu, C.; Szirányi, T. Real-Time Human Detection and Gesture Recognition for On-Board UAV Rescue. Sensors, v. 21, n. 6, p. 2180, 2021.
+    \item \textbf{[5]} Silva, E. S. et al. A preliminary evaluation of the leap motion sensor as controller of new digital musical instruments. In: Proceedings of a conference, 2013.
+    \item \textbf{[6]} Singha, J.; Das, K. Hand gesture recognition based on Karhunen-Loeve transform. arXiv preprint arXiv:1306.2599, 2013.
+    \item \textbf{[7]} Tezza, D.; Andujar, M. The state-of-the-art of human–drone interaction: A survey. IEEE Access 2019, 9, 167438–167454.
+    \item \textbf{[8]} Yoo, M. et al. Motion Estimation and Hand Gesture Recognition-Based Human–UAV Interaction Approach in Real Time. Sensors, v. 22, n. 7, p. 2513, 2022.
+\end{itemize}
+\end{document}

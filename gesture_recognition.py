@@ -11,7 +11,9 @@ Recursos implementados:
 - Visualização moderna com esqueleto colorido por dedo e badge do gesto reconhecido
 """
 import os
+import shutil
 import time
+import urllib.request
 from collections import deque
 
 import cv2
@@ -26,6 +28,31 @@ except ImportError:
     MEDIAPIPE_AVAILABLE = False
 
 MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hand_landmarker.task")
+MODEL_URL = (
+    "https://storage.googleapis.com/mediapipe-models/"
+    "hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+)
+
+
+def ensure_hand_landmarker_model(model_path=MODEL_PATH):
+    """Garante que o arquivo hand_landmarker.task exista localmente, baixando-o se necessário."""
+    if os.path.isfile(model_path):
+        return model_path
+
+    os.makedirs(os.path.dirname(model_path), exist_ok=True)
+    tmp_path = f"{model_path}.tmp"
+    print(f"[INFO] Baixando modelo MediaPipe para {model_path} ...")
+    try:
+        with urllib.request.urlopen(MODEL_URL, timeout=60) as resp, open(tmp_path, "wb") as out:
+            shutil.copyfileobj(resp, out)
+        os.replace(tmp_path, model_path)
+    except Exception as exc:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise FileNotFoundError(
+            f"Modelo não encontrado em {model_path} e falha ao baixar de {MODEL_URL}: {exc}"
+        ) from exc
+    return model_path
 
 # Conexões anatômicas entre os 21 landmarks da mão
 HAND_CONNECTIONS = [
@@ -248,8 +275,7 @@ class HandGestureRecognizer:
                  min_tracking_confidence=0.5):
         if not MEDIAPIPE_AVAILABLE:
             raise ImportError("MediaPipe não está instalado. Execute: pip install mediapipe")
-        if not os.path.isfile(MODEL_PATH):
-            raise FileNotFoundError(f"Modelo não encontrado: {MODEL_PATH}")
+        ensure_hand_landmarker_model(MODEL_PATH)
 
         base_options = mp_python.BaseOptions(model_asset_path=MODEL_PATH)
         options = mp_vision.HandLandmarkerOptions(

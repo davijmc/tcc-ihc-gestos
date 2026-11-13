@@ -1,27 +1,49 @@
 """
 Módulo de Gerenciamento de Dicionários de Gestos.
-Etapa 4: CRUD de dicionários com gestos capturados e comandos associados.
-
-Melhorias implementadas:
-- add_gesture_to_dict aceita handedness e captured_landmarks_path
-- save_gesture_capture persiste landmarks normalizados em JSON
-- load_gesture_captures carrega todas as capturas de um gesto
+CRUD completo de dicionários dinâmicos em JSON com suporte a limiar (threshold),
+modo de classificação e catálogo de presets de comandos para computador.
 """
-import os
 import json
+import os
+import re
 import shutil
 
-import sys
-
 # Diretório base para dicionários
-if getattr(sys, 'frozen', False):
-    BASE_DIR = os.path.dirname(sys.executable)
-else:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DICTIONARIES_DIR = os.path.join(BASE_DIR, "dicionarios")
 
-# Comandos pyautogui disponíveis para consulta
+DEFAULT_THRESHOLD = 0.15
+DEFAULT_MODE = "dinamico"
+
+# Ações prontas amigáveis para facilitar o cadastro sem digitar código Python
+COMMAND_PRESETS = {
+    "Passar Slide / Seta Direita (→)": "press('right')",
+    "Voltar Slide / Seta Esquerda (←)": "press('left')",
+    "Seta para Cima (↑)": "press('up')",
+    "Seta para Baixo (↓)": "press('down')",
+    "Play / Pause (Espaço)": "press('space')",
+    "Confirmar (Enter)": "press('enter')",
+    "Cancelar / Sair (ESC)": "press('escape')",
+    "Zoom In (Ctrl + +)": "hotkey('ctrl', '+')",
+    "Zoom Out (Ctrl + -)": "hotkey('ctrl', '-')",
+    "Aumentar Volume": "press('volumeup')",
+    "Diminuir Volume": "press('volumedown')",
+    "Silenciar Áudio": "press('volumemute')",
+    "Mídia: Próxima Faixa": "press('nexttrack')",
+    "Mídia: Faixa Anterior": "press('prevtrack')",
+    "Mídia: Play/Pause": "press('playpause')",
+    "Copiar (Ctrl + C)": "hotkey('ctrl', 'c')",
+    "Colar (Ctrl + V)": "hotkey('ctrl', 'v')",
+    "Desfazer (Ctrl + Z)": "hotkey('ctrl', 'z')",
+    "Alternar Janela (Alt + Tab)": "hotkey('alt', 'tab')",
+    "Clique Esquerdo": "click()",
+    "Clique Duplo": "doubleClick()",
+    "Rolar p/ Baixo": "scroll(-5)",
+    "Rolar p/ Cima": "scroll(5)",
+    "Personalizado (digitar comando)": "",
+}
+
+# Lista completa de comandos pyautogui para consulta rápida
 PYAUTOGUI_COMMANDS = [
     "press('enter')", "press('space')", "press('tab')", "press('escape')",
     "press('backspace')", "press('delete')", "press('up')", "press('down')",
@@ -32,6 +54,7 @@ PYAUTOGUI_COMMANDS = [
     "press('volumeup')", "press('volumedown')", "press('volumemute')",
     "press('playpause')", "press('nexttrack')", "press('prevtrack')",
     "press('printscreen')", "press('capslock')", "press('numlock')",
+    "hotkey('ctrl', '+')", "hotkey('ctrl', '-')",
     "hotkey('ctrl', 'c')", "hotkey('ctrl', 'v')", "hotkey('ctrl', 'x')",
     "hotkey('ctrl', 'z')", "hotkey('ctrl', 'y')", "hotkey('ctrl', 'a')",
     "hotkey('ctrl', 's')", "hotkey('ctrl', 'f')", "hotkey('ctrl', 'w')",
@@ -49,51 +72,69 @@ def ensure_dict_dir():
     os.makedirs(DICTIONARIES_DIR, exist_ok=True)
 
 
-def safe_gesture_name(gesture_name):
+def safe_gesture_name(gesture_name: str) -> str:
     """
-    Sanitiza o nome de um gesto para uso seguro como nome de pasta.
-    Usado de forma consistente em todas as operações de disco para que
-    o caminho gerado no save bata com o usado na captura/carga.
+    Sanitiza o identificador de um gesto para uso seguro como nome de pasta no disco.
     """
-    return (gesture_name or "").replace("/", "_").replace("\\", "_").replace("+", "_")
+    cleaned = re.sub(r'[<>:"/\\|?*+]+', "_", (gesture_name or "").strip())
+    cleaned = re.sub(r"\s+", "_", cleaned).strip("_")
+    return cleaned or "gesto"
+
+
+def _normalize_dict_schema(data: dict) -> dict:
+    """Garante campos padrão do esquema JSON alinhado com a Monografia V2."""
+    if not isinstance(data, dict):
+        return create_empty_dictionary("")
+
+    data.setdefault("capture_time", 3)
+    data.setdefault("threshold", DEFAULT_THRESHOLD)
+    data.setdefault("mode", DEFAULT_MODE)
+    data.setdefault("gestures", [])
+
+    for g in data["gestures"]:
+        if "reference_landmarks" not in g and g.get("captured_landmarks"):
+            g["reference_landmarks"] = g["captured_landmarks"]
+        elif "captured_landmarks" not in g and g.get("reference_landmarks"):
+            g["captured_landmarks"] = g["reference_landmarks"]
+    return data
 
 
 def list_dictionaries():
     """Lista todos os dicionários disponíveis."""
     ensure_dict_dir()
     dicts = []
-    for name in os.listdir(DICTIONARIES_DIR):
+    for name in sorted(os.listdir(DICTIONARIES_DIR)):
         meta_path = os.path.join(DICTIONARIES_DIR, name, "meta.json")
         if os.path.isfile(meta_path):
             try:
                 with open(meta_path, "r", encoding="utf-8") as f:
                     meta = json.load(f)
-                dicts.append(meta)
+                dicts.append(_normalize_dict_schema(meta))
             except (json.JSONDecodeError, IOError):
                 continue
     return dicts
 
 
-def load_dictionary(name):
+def load_dictionary(name: str):
     """Carrega um dicionário pelo nome."""
     meta_path = os.path.join(DICTIONARIES_DIR, name, "meta.json")
     if not os.path.isfile(meta_path):
         return None
     with open(meta_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+        return _normalize_dict_schema(json.load(f))
 
 
-def save_dictionary(data):
+def save_dictionary(data: dict):
     """Salva um dicionário (cria ou atualiza)."""
     ensure_dict_dir()
+    data = _normalize_dict_schema(data)
     name = data["name"]
     dict_dir = os.path.join(DICTIONARIES_DIR, name)
     os.makedirs(dict_dir, exist_ok=True)
 
-    # Criar subpastas para cada gesto (nome sanitizado, consistente com
-    # save_gesture_capture/load_gesture_captures)
     for gesture in data.get("gestures", []):
-        gesture_dir = os.path.join(dict_dir, safe_gesture_name(gesture["gesture_name"]))
+        folder_key = gesture.get("label") or gesture.get("gesture_name")
+        gesture_dir = os.path.join(dict_dir, safe_gesture_name(folder_key))
         os.makedirs(gesture_dir, exist_ok=True)
 
     meta_path = os.path.join(dict_dir, "meta.json")
@@ -101,7 +142,7 @@ def save_dictionary(data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def delete_dictionary(name):
+def delete_dictionary(name: str) -> bool:
     """Exclui um dicionário inteiro."""
     dict_dir = os.path.join(DICTIONARIES_DIR, name)
     if os.path.isdir(dict_dir):
@@ -110,84 +151,66 @@ def delete_dictionary(name):
     return False
 
 
-def dictionary_exists(name):
+def dictionary_exists(name: str) -> bool:
     """Verifica se já existe um dicionário com esse nome."""
     meta_path = os.path.join(DICTIONARIES_DIR, name, "meta.json")
     return os.path.isfile(meta_path)
 
 
-def create_empty_dictionary(name, capture_time=3):
+def create_empty_dictionary(name: str, capture_time: int = 3,
+                            threshold: float = DEFAULT_THRESHOLD,
+                            mode: str = DEFAULT_MODE) -> dict:
     """Cria um dicionário vazio com metadados iniciais."""
     return {
         "name": name,
         "capture_time": capture_time,
-        "gestures": []
+        "threshold": threshold,
+        "mode": mode,
+        "gestures": [],
     }
 
 
-def add_gesture_to_dict(data, gesture_name, command_type, command,
-                         handedness="", captured_landmarks_path="",
-                         captured_landmarks=None):
-    """
-    Adiciona um gesto ao dicionário.
-
-    Parâmetros
-    ----------
-    data                    : dict — dicionário em memória
-    gesture_name            : str  — nome simbólico (ex: "FIST", "BOTH_FIST+OPEN_HAND")
-    command_type            : str  — "serial" ou "computador"
-    command                 : str  — comando a executar
-    handedness              : str  — "Right" | "Left" | "Both"
-    captured_landmarks_path : str  — caminho do arquivo JSON com landmarks
-    captured_landmarks      : list — landmarks normalizados em memória (fallback)
-    """
-    data["gestures"].append({
+def add_gesture_to_dict(data: dict, gesture_name: str, command_type: str, command: str,
+                        handedness: str = "", captured_landmarks_path: str = "",
+                        captured_landmarks=None, label: str = None):
+    """Adiciona um gesto ao dicionário em memória."""
+    lms = captured_landmarks if captured_landmarks is not None else []
+    entry = {
         "gesture_name": gesture_name,
+        "label": label or gesture_name,
         "command_type": command_type,
         "command": command,
         "handedness": handedness,
         "captured_landmarks_path": captured_landmarks_path,
-        "captured_landmarks": captured_landmarks if captured_landmarks is not None else [],
-    })
+        "captured_landmarks": lms,
+        "reference_landmarks": lms,
+    }
+    data.setdefault("gestures", []).append(entry)
     return data
 
 
-def remove_gesture_from_dict(data, gesture_index):
+def remove_gesture_from_dict(data: dict, gesture_index: int):
     """Remove um gesto do dicionário pelo índice."""
-    if 0 <= gesture_index < len(data["gestures"]):
-        removed = data["gestures"].pop(gesture_index)
-        # Remove a pasta do gesto (nome sanitizado, consistente com o save)
-        gesture_dir = os.path.join(DICTIONARIES_DIR, data["name"],
-                                    safe_gesture_name(removed["gesture_name"]))
+    gestures = data.get("gestures", [])
+    if 0 <= gesture_index < len(gestures):
+        removed = gestures.pop(gesture_index)
+        folder_key = removed.get("label") or removed.get("gesture_name")
+        gesture_dir = os.path.join(
+            DICTIONARIES_DIR, data["name"], safe_gesture_name(folder_key)
+        )
         if os.path.isdir(gesture_dir):
             shutil.rmtree(gesture_dir)
     return data
 
 
-def save_gesture_capture(dict_name, gesture_name, landmarks_data):
+def save_gesture_capture(dict_name: str, gesture_key: str, landmarks_data: dict) -> str:
     """
-    Salva os dados de captura de um gesto (landmarks normalizados) em disco.
-
-    O arquivo JSON contém:
-    {
-        "gesture_name": str,
-        "handedness": str,
-        "normalized_landmarks": list[list[list[float]]]  — uma lista por mão
-    }
-
-    Parâmetros
-    ----------
-    dict_name      : str  — nome do dicionário
-    gesture_name   : str  — nome do gesto (usado como subpasta)
-    landmarks_data : dict — dados a salvar
-
-    Retorna
-    -------
-    str — caminho absoluto do arquivo salvo
+    Salva os landmarks normalizados de uma captura de gesto em disco.
+    Usa gesture_key (preferencialmente o rótulo único do gesto) para evitar
+    sobrescrever capturas de gestos diferentes com mesma postura base.
     """
     ensure_dict_dir()
-    # Sanitizar nome do gesto para uso como nome de pasta
-    safe_name = safe_gesture_name(gesture_name)
+    safe_name = safe_gesture_name(gesture_key)
     gesture_dir = os.path.join(DICTIONARIES_DIR, dict_name, safe_name)
     os.makedirs(gesture_dir, exist_ok=True)
 
@@ -201,15 +224,9 @@ def save_gesture_capture(dict_name, gesture_name, landmarks_data):
     return capture_path
 
 
-def load_gesture_captures(dict_name, gesture_name):
-    """
-    Carrega todas as capturas de landmarks de um gesto.
-
-    Retorna
-    -------
-    list[dict] — lista de objetos carregados dos arquivos JSON
-    """
-    safe_name = safe_gesture_name(gesture_name)
+def load_gesture_captures(dict_name: str, gesture_key: str):
+    """Carrega todas as capturas de landmarks salvas de um gesto."""
+    safe_name = safe_gesture_name(gesture_key)
     gesture_dir = os.path.join(DICTIONARIES_DIR, dict_name, safe_name)
     captures = []
     if not os.path.isdir(gesture_dir):
@@ -225,11 +242,20 @@ def load_gesture_captures(dict_name, gesture_name):
     return captures
 
 
-def has_serial_commands(data):
+def has_serial_commands(data: dict) -> bool:
     """Verifica se o dicionário tem comandos seriais."""
-    return any(g["command_type"] == "serial" for g in data.get("gestures", []))
+    return any(g.get("command_type") == "serial" for g in data.get("gestures", []))
 
 
-def has_computer_commands(data):
+def has_computer_commands(data: dict) -> bool:
     """Verifica se o dicionário tem comandos de computador."""
-    return any(g["command_type"] == "computador" for g in data.get("gestures", []))
+    return any(g.get("command_type") == "computador" for g in data.get("gestures", []))
+
+
+def find_preset_for_command(cmd: str) -> str:
+    """Retorna o nome do preset correspondente a um comando, ou Personalizado."""
+    normalized = (cmd or "").strip()
+    for preset_name, preset_cmd in COMMAND_PRESETS.items():
+        if preset_cmd and preset_cmd == normalized:
+            return preset_name
+    return "Personalizado (digitar comando)"

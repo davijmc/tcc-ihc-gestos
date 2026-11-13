@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# PyInstaller / Builds
+build/
+dist/
+*.spec
+*.exe
+
+# Modelo MediaPipe (binário grande, ~7.8 MB)
+hand_landmarker.task
+*.task
+
+# Dicionários e capturas gerados pelo usuário em runtime
+dicionarios/
+
+# Capturas de tela e imagens temporárias
+*.png
+*.jpg
+*.jpeg
+
+# Logs e temporários
+*.log
+*.tmp
+*.bak
+
+# IDEs e editores
+.vscode/
+.idea/
+
+# Sistema Operacional
+Thumbs.db
+desktop.ini
+.DS_Store

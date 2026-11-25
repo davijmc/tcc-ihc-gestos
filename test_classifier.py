@@ -22,7 +22,9 @@ sys.modules["mediapipe.tasks.python"] = type(sys)("mediapipe.tasks.python")
 sys.modules["mediapipe.tasks.python.vision"] = type(sys)("mediapipe.tasks.python.vision")
 
 from gesture_recognition import (
+    GestureStabilizer,
     HandGestureRecognizer,
+    TemporalSmoother,
     landmarks_to_list,
     list_to_landmarks,
     normalize_landmarks,
@@ -257,6 +259,91 @@ back = list_to_landmarks(lst)
 assert np.allclose(norm, back, atol=1e-5)
 print("  Round-trip (21, 3) validado ✓")
 
+# [13] Inversão de lateralidade (handedness) conforme modo espelho
+print("\n[13] Inversão de lateralidade (handedness) em HandGestureRecognizer")
+import mediapipe as mp_stub
+import numpy as np_img
+
+mp_stub.ImageFormat = type("ImageFormat", (), {"SRGB": 1})
+mp_stub.Image = lambda image_format, data: data
+
+
+class FakeCategory:
+    def __init__(self, category_name):
+        self.category_name = category_name
+
+
+class FakeResult:
+    def __init__(self, hand_landmarks, handedness):
+        self.hand_landmarks = hand_landmarks
+        self.handedness = handedness
+
+
+class FakeLandmarker:
+    def __init__(self, result):
+        self._result = result
+
+    def detect(self, _mp_image):
+        return self._result
+
+
+rec_test = HandGestureRecognizer.__new__(HandGestureRecognizer)
+rec_test._smoother = TemporalSmoother()
+rec_test._stabilizer = GestureStabilizer()
+rec_test.latest_result = None
+rec_test.last_inference_ms = 0.0
+rec_test.landmarker = FakeLandmarker(
+    FakeResult(
+        hand_landmarks=[make_pointing_hand(1.0)],
+        handedness=[[FakeCategory("Left")]],
+    )
+)
+
+dummy_frame = np_img.zeros((120, 160, 3), dtype=np_img.uint8)
+rec_test.process_frame(dummy_frame, invert_handedness=True)
+hands_inv = rec_test.get_all_hands_info()
+assert hands_inv[0]["handedness"] == "Right", f"Esperado Right, obteve {hands_inv[0]['handedness']}"
+
+rec_test._stabilizer.reset()
+rec_test.draw_landmarks(dummy_frame.copy())
+assert "Right" in rec_test._stabilizer._candidate, (
+    f"draw_landmarks não usou handedness invertida: {rec_test._stabilizer._candidate}"
+)
+
+rec_test.process_frame(dummy_frame, invert_handedness=False)
+hands_raw = rec_test.get_all_hands_info()
+assert hands_raw[0]["handedness"] == "Left", f"Esperado Left, obteve {hands_raw[0]['handedness']}"
+print("  process_frame / get_all_hands_info / draw_landmarks com invert_handedness ✓")
+
+# [14] Detecção consistente do polegar em orientações espelhada e não-espelhada
+print("\n[14] Detecção do polegar independente de espelhamento")
+
+
+def make_open_hand(mirrored: bool):
+    pts = [FakeLM(0.5, 0.7, 0.0) for _ in range(21)]
+    s = -1.0 if mirrored else 1.0
+    # Base dos dedos: indicador (5) no lado do polegar, mindinho (17) no lado oposto
+    pts[5] = FakeLM(0.5 + 0.05 * s, 0.5, 0.0)
+    pts[9] = FakeLM(0.5, 0.5, 0.0)
+    pts[13] = FakeLM(0.5 - 0.04 * s, 0.52, 0.0)
+    pts[17] = FakeLM(0.5 - 0.08 * s, 0.55, 0.0)
+    # Quatro dedos estendidos para cima
+    for mcp, pip, tip in [(5, 6, 8), (9, 10, 12), (13, 14, 16), (17, 18, 20)]:
+        pts[pip] = FakeLM(pts[mcp].x, 0.35, 0.0)
+        pts[tip] = FakeLM(pts[mcp].x, 0.20, 0.0)
+    # Polegar estendido para fora na direção do indicador
+    pts[2] = FakeLM(0.5 + 0.08 * s, 0.60, 0.0)
+    pts[3] = FakeLM(0.5 + 0.13 * s, 0.54, 0.0)
+    pts[4] = FakeLM(0.5 + 0.19 * s, 0.48, 0.0)
+    return pts
+
+
+assert rec_stub.get_gesture_name(make_open_hand(mirrored=True), "Right") == "OPEN_HAND"
+assert rec_stub.get_gesture_name(make_open_hand(mirrored=False), "Right") == "OPEN_HAND"
+assert rec_stub.get_gesture_name(make_open_hand(mirrored=True), "Left") == "OPEN_HAND"
+assert rec_stub.get_gesture_name(make_open_hand(mirrored=False), "Left") == "OPEN_HAND"
+print("  OPEN_HAND reconhecido em ambas orientações e lateralidades ✓")
+
 print("\n" + "=" * 64)
-print("TODOS OS 12 TESTES PASSARAM COM SUCESSO!")
+print("TODOS OS 14 TESTES PASSARAM COM SUCESSO!")
 print("=" * 64)

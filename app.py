@@ -1186,7 +1186,9 @@ class CameraApp(ctk.CTk):
 
                 if should_detect:
                     try:
-                        self.gesture_recognizer.process_frame(frame)
+                        self.gesture_recognizer.process_frame(
+                            frame, invert_handedness=not self.flip_h
+                        )
                         hands = self.gesture_recognizer.get_all_hands_info()
                         detail = None
 

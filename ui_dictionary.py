@@ -750,4 +750,4 @@ class DictionaryEditorPanel(ctk.CTkFrame):
 
 def _handedness_icon(handedness: str) -> str:
     """Retorna um marcador curto para lateralidade."""
-    return {"Right": "Dir", "Left": "Esq", "Both": "Ambas"}.get(handedness, "Mão")
+    return {"Right": "Esq", "Left": "Dir", "Both": "Ambas"}.get(handedness, "Mão")

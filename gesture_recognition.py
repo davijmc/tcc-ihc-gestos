@@ -271,6 +271,8 @@ class HandGestureRecognizer:
     Reconhecedor de gestos de mão usando MediaPipe Tasks API.
     """
 
+    _invert_handedness = False
+
     def __init__(self, max_hands=2, min_detection_confidence=0.5,
                  min_tracking_confidence=0.5):
         if not MEDIAPIPE_AVAILABLE:
@@ -289,12 +291,23 @@ class HandGestureRecognizer:
         self.landmarker = mp_vision.HandLandmarker.create_from_options(options)
         self.latest_result = None
         self.last_inference_ms = 0.0
+        self._invert_handedness = False
 
         self._smoother = TemporalSmoother()
         self._stabilizer = GestureStabilizer()
 
-    def process_frame(self, frame):
+    def _resolve_handedness(self, index: int) -> str:
+        """Retorna a lateralidade ('Right' ou 'Left') da mão indexada, aplicando inversão quando ativa."""
+        handedness = "Right"
+        if self.latest_result and self.latest_result.handedness and index < len(self.latest_result.handedness):
+            handedness = self.latest_result.handedness[index][0].category_name
+        if getattr(self, "_invert_handedness", False):
+            return "Left" if handedness == "Right" else "Right"
+        return handedness
+
+    def process_frame(self, frame, invert_handedness: bool = False):
         """Processa um frame BGR, registra a latência em ms e retorna os resultados."""
+        self._invert_handedness = bool(invert_handedness)
         t0 = time.perf_counter()
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
@@ -315,9 +328,7 @@ class HandGestureRecognizer:
         for i, hand_lms in enumerate(self.latest_result.hand_landmarks):
             pts = [(int(lm.x * w), int(lm.y * h)) for lm in hand_lms]
 
-            handedness = "Right"
-            if self.latest_result.handedness and i < len(self.latest_result.handedness):
-                handedness = self.latest_result.handedness[i][0].category_name
+            handedness = self._resolve_handedness(i)
 
             # Conexões esqueléticas por dedo
             for start, end in HAND_CONNECTIONS:
@@ -343,7 +354,7 @@ class HandGestureRecognizer:
             else:
                 gesture = self.get_gesture_name(hand_lms, handedness)
                 stable_gesture = self._stabilizer.stabilize(handedness, gesture)
-                hand_pt = "Dir" if handedness == "Right" else "Esq"
+                hand_pt = "Esq" if handedness == "Right" else "Dir"
                 label_text = f"{hand_pt}: {gesture_code_to_pt(stable_gesture)}"
                 bg_color = (22, 26, 38)
                 border_color = (96, 165, 250)
@@ -393,7 +404,7 @@ class HandGestureRecognizer:
         pts = _to_points_array(hand_lms)
         fingers = []
 
-        # Polegar: razão entre distância ponta->MCP e IP->MCP combinada ao eixo X
+        # Polegar: razão de extensão combinada à direção da palma (invariante ao espelho)
         thumb_tip = pts[4, :2]
         thumb_ip = pts[3, :2]
         thumb_mcp = pts[2, :2]
@@ -401,7 +412,11 @@ class HandGestureRecognizer:
         dist_tip_mcp = float(np.linalg.norm(thumb_tip - thumb_mcp))
         dist_ip_mcp = float(np.linalg.norm(thumb_ip - thumb_mcp))
 
-        if handedness == "Right":
+        palm_vec = pts[5, :2] - pts[17, :2]
+        thumb_vec = thumb_tip - thumb_ip
+        if float(np.linalg.norm(palm_vec)) > 1e-6:
+            x_check = bool(np.dot(thumb_vec, palm_vec) > 0)
+        elif handedness == "Right":
             x_check = bool(pts[4, 0] < pts[3, 0])
         else:
             x_check = bool(pts[4, 0] > pts[3, 0])
@@ -477,9 +492,7 @@ class HandGestureRecognizer:
             return hands_info
 
         for i, hand_lms in enumerate(self.latest_result.hand_landmarks):
-            handedness = "Right"
-            if self.latest_result.handedness and i < len(self.latest_result.handedness):
-                handedness = self.latest_result.handedness[i][0].category_name
+            handedness = self._resolve_handedness(i)
 
             gesture_raw = self.get_gesture_name(hand_lms, handedness)
             gesture = self._stabilizer.stabilize(handedness, gesture_raw)
